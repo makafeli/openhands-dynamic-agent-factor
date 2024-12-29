@@ -8,7 +8,7 @@ setup(
     author_email="info@yasin.nu",
     packages=find_packages(),
     install_requires=[
-        "openhands>=0.1.0",
+        "openhands>=0.17.0",
         "dataclasses;python_version<'3.7'",
     ],
     extras_require={
