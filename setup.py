@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="openhands-dynamic-agent-factory",
+    name="openhands_dynamic_agent_factory",
     version="0.1.0",
     description="Dynamic agent factory for OpenHands that generates micro-agents based on technology keywords",
-    author="OpenHands",
-    author_email="openhands@all-hands.dev",
+    author="Makafeli",
+    author_email="info@yasin.nu",
     packages=find_packages(),
     install_requires=[
         "openhands>=0.1.0",
