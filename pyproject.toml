@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "openhands_dynamic_agent_factory"
+name = "openhands-dynamic-agent-factor"
 version = "0.1.0"
 authors = [
   { name="makafeli", email="info@yasin.nu" },
