@@ -1,0 +1,15 @@
+LICENSE
+README.md
+pyproject.toml
+openhands_dynamic_agent_factor.egg-info/PKG-INFO
+openhands_dynamic_agent_factor.egg-info/SOURCES.txt
+openhands_dynamic_agent_factor.egg-info/dependency_links.txt
+openhands_dynamic_agent_factor.egg-info/requires.txt
+openhands_dynamic_agent_factor.egg-info/top_level.txt
+openhands_dynamic_agent_factory/__init__.py
+openhands_dynamic_agent_factory/core/__init__.py
+openhands_dynamic_agent_factory/core/dynamic_agent_factory.py
+openhands_dynamic_agent_factory/core/dynamic_agent_factory_llm.py
+openhands_dynamic_agent_factory/core/factory.py
+openhands_dynamic_agent_factory/core/trigger_map.py
+openhands_dynamic_agent_factory/core/triggers.py
