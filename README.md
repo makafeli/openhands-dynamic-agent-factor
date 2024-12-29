@@ -13,38 +13,50 @@ A powerful extension for OpenHands that provides dynamic agent generation capabi
 
 ## Installation
 
-1. Install the package using pip:
+### Prerequisites
+
+- Python 3.7 or higher
+- OpenHands framework
+- Access to an LLM provider (e.g., OpenAI)
+
+### Basic Installation
+
 ```bash
 pip install openhands-dynamic-agent-factory
 ```
 
-2. Optional: Install technology-specific dependencies:
+### Technology-Specific Dependencies
+
+Choose the dependencies based on your needs:
+
 ```bash
-# For Python analysis support
+# Python analysis support
 pip install "openhands-dynamic-agent-factory[python]"
 
-# For React analysis support
+# React analysis support
 pip install "openhands-dynamic-agent-factory[react]"
 
-# For Node.js analysis support
+# Node.js analysis support
 pip install "openhands-dynamic-agent-factory[node]"
 
-# For SQL analysis support
+# SQL analysis support
 pip install "openhands-dynamic-agent-factory[sql]"
 
-# For all technologies
+# All technologies
 pip install "openhands-dynamic-agent-factory[all]"
 ```
 
 ## Quick Start
 
+### Basic Usage
+
 ```python
 from openhands_dynamic_agent_factory import DynamicAgentFactoryLLM
 
-# Create the factory
+# Initialize the factory
 factory = DynamicAgentFactoryLLM()
 
-# Generate a Python analyzer
+# Generate a Python code analyzer
 result = factory.run({
     "technology_keyword": "python",
     "options": {
@@ -52,110 +64,184 @@ result = factory.run({
     }
 })
 
+# Use the generated agent
 if result["agent_class"]:
-    # Create an instance of the generated agent
     agent = result["agent_class"]()
-    
-    # Analyze some code
     analysis = agent.run({
-        "code_snippet": "your_code_here",
+        "code_snippet": """
+        def process_data(user_input):
+            return eval(user_input)  # Security risk!
+        """,
         "analysis_type": "security"
     })
     print(analysis)
 ```
 
-## Configuration
+### Configuration
 
-1. Configure your OpenHands LLM settings in your project:
+Configure your OpenHands LLM settings in your project:
+
 ```python
-# openhands_config.py
-LLM_PROVIDER = "openai"  # or your preferred provider
-LLM_MODEL_NAME = "gpt-4"  # or your preferred model
-LLM_API_KEY = "your-api-key"
-LLM_CONFIG = {
-    # Additional LLM configuration
-}
+# config.py
+from openhands.config import Config
+
+config = Config({
+    "llm": {
+        "provider": "openai",
+        "model": "gpt-4",
+        "api_key": "your-api-key",
+        "temperature": 0.7
+    }
+})
 ```
 
-2. The factory will automatically use these settings.
+The factory will automatically use these settings from your OpenHands configuration.
 
 ## Supported Technologies
 
 ### Python Analysis
-- Input: Python code snippets
-- Analysis types: style, security, performance
-- Outputs: analysis report, suggestions, complexity score
+- **Input**: Python code snippets
+- **Analysis Types**: 
+  - Style (PEP 8 compliance)
+  - Security (vulnerability detection)
+  - Performance (optimization suggestions)
+- **Outputs**: Detailed analysis report with:
+  - Code quality metrics
+  - Security vulnerabilities
+  - Performance recommendations
 
 ### React Analysis
-- Input: React/JSX code
-- Features: Component lifecycle, hooks usage, performance
-- Outputs: analysis report, performance tips, accessibility report
+- **Input**: React/JSX components
+- **Features**: 
+  - Component structure analysis
+  - Hooks usage patterns
+  - Performance optimization
+- **Outputs**: 
+  - Best practices compliance
+  - Performance bottlenecks
+  - Accessibility issues
 
 ### Node.js Analysis
-- Input: Node.js/JavaScript code
-- Focus: Security, async patterns, scalability
-- Outputs: analysis report, security audit, performance metrics
+- **Input**: Node.js/JavaScript code
+- **Focus Areas**: 
+  - Security vulnerabilities
+  - Async/await patterns
+  - Scalability issues
+- **Outputs**: 
+  - Security audit report
+  - Performance metrics
+  - Best practices suggestions
 
 ### SQL Analysis
-- Input: SQL queries
-- Features: Query optimization, injection checks
-- Outputs: analysis report, optimization suggestions, execution plan
+- **Input**: SQL queries
+- **Features**: 
+  - Query optimization
+  - Injection prevention
+  - Performance analysis
+- **Outputs**: 
+  - Optimization suggestions
+  - Security recommendations
+  - Execution plan analysis
 
 ## Advanced Usage
 
 ### Custom Technology Triggers
 
-You can add your own technology triggers:
+Add your own technology-specific analyzers:
 
 ```python
 from openhands_dynamic_agent_factory import TRIGGER_MAP, TriggerInfo
 
+# Define a new Java analyzer
 TRIGGER_MAP["java"] = TriggerInfo(
     class_name="JavaAnalyzer",
-    description="Java code analyzer",
-    inputs=["code_snippet"],
-    outputs=["analysis_report"],
+    description="Advanced Java code analyzer",
+    inputs=["code_snippet", "analysis_type"],
+    outputs=["analysis_report", "suggestions"],
     required_imports=["javalang"],
     validation_rules={
-        "max_code_length": 10000
+        "max_code_length": 10000,
+        "required_fields": ["code_snippet"]
     },
     llm_prompt_template="""
-    Generate a Java code analyzer...
+    Create a Java code analyzer that:
+    1. Parses the input using javalang
+    2. Analyzes for {analysis_type}
+    3. Returns detailed suggestions
     """
 )
 ```
 
 ### Error Handling
 
-The factory provides detailed error information:
+The factory provides comprehensive error handling:
 
 ```python
-result = factory.run({"technology_keyword": "python"})
-if result["agent_class"] is None:
-    error_info = result["generation_info"]
-    print(f"Generation failed: {error_info['error']}")
+try:
+    result = factory.run({
+        "technology_keyword": "python",
+        "options": {"analysis_type": "security"}
+    })
+    if result["agent_class"] is None:
+        error_info = result["generation_info"]
+        print(f"Agent generation failed: {error_info['error']}")
+        print(f"Details: {error_info.get('details', 'No additional details')}")
+except Exception as e:
+    print(f"Unexpected error: {str(e)}")
 ```
 
-## Examples
+## Project Structure
 
-Check the `examples/` directory for more usage examples:
-- `basic_usage.py`: Simple example of generating and using an agent
-- More examples coming soon!
+```
+openhands-dynamic-agent-factory/
+├── openhands_dynamic_agent_factory/
+│   ├── core/
+│   │   ├── factory.py         # Main factory implementation
+│   │   ├── triggers.py        # Technology trigger definitions
+│   │   └── dynamic_agent_factory_llm.py
+│   └── __init__.py
+├── examples/
+│   └── basic_usage.py         # Usage examples
+├── README.md
+├── LICENSE
+└── pyproject.toml
+```
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+2. Create your feature branch:
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. Make your changes and commit:
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. Push to your branch:
+   ```bash
+   git push origin feature/amazing-feature
+   ```
 5. Open a Pull Request
+
+### Development Setup
+
+1. Clone the repository
+2. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+3. Run tests:
+   ```bash
+   pytest tests/
+   ```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Built on top of the amazing [OpenHands](https://github.com/All-Hands-AI/OpenHands) framework
-- Uses LLM capabilities for dynamic code generation
-- Inspired by the need for flexible, technology-specific code analysis
+- Built on top of the [OpenHands](https://github.com/All-Hands-AI/OpenHands) framework
+- Powered by state-of-the-art LLM capabilities
+- Inspired by the need for intelligent, technology-specific code analysis
