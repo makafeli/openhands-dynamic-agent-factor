@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "openhands_dynamic_agent_factory"
 version = "0.1.0"
 authors = [
-  { name="Makafeli", email="info@yasin.nu" },
+  { name="makafeli", email="info@yasin.nu" },
 ]
 keywords = ["openhands", "llm", "agent", "factory", "code-analysis"]
 description = "Dynamic agent factory for OpenHands that generates micro-agents based on technology keywords"
