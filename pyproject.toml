@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openhands_dynamic_agent_factory"
-version = "0.1.0"
+version = "0.17.0"
 authors = [
   { name="Makafeli", email="info@yasin.nu" },
 ]
