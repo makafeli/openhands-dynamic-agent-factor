@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openhands_dynamic_agent_factory"
-version = "0.17.0"
+version = "0.1.0"
 authors = [
   { name="Makafeli", email="info@yasin.nu" },
 ]
@@ -24,7 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "openhands>=0.1.0",
+    "openhands>=0.17.0",
     "dataclasses;python_version<'3.7'"
 ]
 
