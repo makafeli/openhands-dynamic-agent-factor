@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: openhands-dynamic-agent-factor
-Version: 0.1.2
+Version: 0.1.3
 Summary: Dynamic agent factory for OpenHands that generates micro-agents based on technology keywords
 Author-email: makafeli <info@yasin.nu>
 Project-URL: Homepage, https://github.com/makafeli/openhands-dynamic-agent-factor
