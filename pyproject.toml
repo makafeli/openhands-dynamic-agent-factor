@@ -8,6 +8,7 @@ version = "0.1.0"
 authors = [
   { name="Makafeli", email="info@yasin.nu" },
 ]
+keywords = ["openhands", "llm", "agent", "factory", "code-analysis"]
 description = "Dynamic agent factory for OpenHands that generates micro-agents based on technology keywords"
 readme = "README.md"
 requires-python = ">=3.7"
@@ -29,18 +30,26 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-python = ["ast", "pylint"]
-react = ["esprima", "eslint"]
-node = ["acorn", "eslint"]
-sql = ["sqlparse", "sqlalchemy"]
+python = ["ast", "pylint>=3.0.0"]
+react = ["esprima>=4.0.0", "eslint>=8.0.0"]
+node = ["acorn>=8.0.0", "eslint>=8.0.0"]
+sql = ["sqlparse>=0.4.0", "sqlalchemy>=2.0.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.0.0",
+    "mypy>=1.0.0",
+    "flake8>=6.0.0"
+]
 all = [
     "ast",
-    "pylint",
-    "esprima",
-    "eslint",
-    "acorn",
-    "sqlparse",
-    "sqlalchemy"
+    "pylint>=3.0.0",
+    "esprima>=4.0.0",
+    "eslint>=8.0.0",
+    "acorn>=8.0.0",
+    "sqlparse>=0.4.0",
+    "sqlalchemy>=2.0.0"
 ]
 
 [project.urls]
