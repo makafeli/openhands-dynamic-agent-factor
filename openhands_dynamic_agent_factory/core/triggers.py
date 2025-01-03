@@ -131,5 +131,140 @@ TRIGGER_MAP = {
         - Include SQL-specific validations
         - Handle different SQL dialects
         """
+    ),
+
+    "ci/cd": TriggerInfo(
+        class_name="CICDAnalyzer",
+        description="CI/CD pipeline analyzer and optimizer",
+        inputs=["pipeline_config", "platform"],
+        outputs=["analysis_report", "optimization_suggestions", "security_audit"],
+        required_imports=["yaml", "requests"],
+        validation_rules={
+            "supported_platforms": ["github", "gitlab", "jenkins"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that analyzes CI/CD pipelines.
+        The agent should:
+        1. Parse pipeline configuration files
+        2. Identify performance bottlenecks
+        3. Suggest optimizations
+        4. Check for security vulnerabilities
+        5. Generate detailed reports
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'pipeline_config' and 'platform' inputs
+        - Return dict with 'analysis_report', 'optimization_suggestions', and 'security_audit'
+        - Include platform-specific validations
+        - Handle different CI/CD platforms
+        """
+    ),
+
+    "github": TriggerInfo(
+        class_name="GitHubAnalyzer",
+        description="GitHub integration for code analysis and automation",
+        inputs=["repository", "pull_request", "workflow"],
+        outputs=["analysis_report", "automation_suggestions", "security_audit"],
+        required_imports=["requests", "github"],
+        validation_rules={
+            "supported_events": ["pull_request", "push", "workflow_dispatch"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that integrates with GitHub.
+        The agent should:
+        1. Analyze repository code
+        2. Automate pull request reviews
+        3. Optimize workflows
+        4. Check for security vulnerabilities
+        5. Generate detailed reports
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'repository', 'pull_request', and 'workflow' inputs
+        - Return dict with 'analysis_report', 'automation_suggestions', and 'security_audit'
+        - Include GitHub-specific validations
+        - Handle different GitHub events
+        """
+    ),
+
+    "gitlab": TriggerInfo(
+        class_name="GitLabAnalyzer",
+        description="GitLab integration for code analysis and automation",
+        inputs=["repository", "merge_request", "pipeline"],
+        outputs=["analysis_report", "automation_suggestions", "security_audit"],
+        required_imports=["requests", "gitlab"],
+        validation_rules={
+            "supported_events": ["merge_request", "push", "pipeline"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that integrates with GitLab.
+        The agent should:
+        1. Analyze repository code
+        2. Automate merge request reviews
+        3. Optimize pipelines
+        4. Check for security vulnerabilities
+        5. Generate detailed reports
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'repository', 'merge_request', and 'pipeline' inputs
+        - Return dict with 'analysis_report', 'automation_suggestions', and 'security_audit'
+        - Include GitLab-specific validations
+        - Handle different GitLab events
+        """
+    ),
+
+    "pull_requests": TriggerInfo(
+        class_name="PullRequestAnalyzer",
+        description="Pull request analyzer for code review and merging",
+        inputs=["pull_request", "repository", "platform"],
+        outputs=["analysis_report", "review_suggestions", "security_audit"],
+        required_imports=["requests", "github", "gitlab"],
+        validation_rules={
+            "supported_platforms": ["github", "gitlab"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that analyzes pull requests.
+        The agent should:
+        1. Review code changes
+        2. Suggest improvements
+        3. Check for security vulnerabilities
+        4. Automate merging
+        5. Generate detailed reports
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'pull_request', 'repository', and 'platform' inputs
+        - Return dict with 'analysis_report', 'review_suggestions', and 'security_audit'
+        - Include platform-specific validations
+        - Handle different platforms
+        """
+    ),
+
+    "deployments": TriggerInfo(
+        class_name="DeploymentAnalyzer",
+        description="Deployment analyzer for release management",
+        inputs=["deployment_config", "environment", "platform"],
+        outputs=["analysis_report", "optimization_suggestions", "security_audit"],
+        required_imports=["yaml", "requests"],
+        validation_rules={
+            "supported_platforms": ["kubernetes", "docker", "aws"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that analyzes deployments.
+        The agent should:
+        1. Parse deployment configurations
+        2. Identify performance bottlenecks
+        3. Suggest optimizations
+        4. Check for security vulnerabilities
+        5. Generate detailed reports
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'deployment_config', 'environment', and 'platform' inputs
+        - Return dict with 'analysis_report', 'optimization_suggestions', and 'security_audit'
+        - Include platform-specific validations
+        - Handle different deployment platforms
+        """
     )
 }
