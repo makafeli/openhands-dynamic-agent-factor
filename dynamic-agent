@@ -1,0 +1,8 @@
+#!/bin/bash
+# Wrapper script for the Dynamic Agent Management System
+
+# Navigate to the core directory
+cd "$(dirname "$0")/openhands_dynamic_agent_factory/core"
+
+# Execute the CLI script
+python3 cli.py "$@"

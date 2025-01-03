@@ -1,0 +1,20 @@
+{
+  "name": "dynamic-agent",
+  "version": "1.0.0",
+  "description": "Dynamic Agent Management System for technology-specific code analysis and tasks.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "dynamic-agent",
+    "code-analysis",
+    "technology",
+    "automation"
+  ],
+  "author": "OpenHands",
+  "license": "MIT",
+  "dependencies": {
+    "child_process": "^1.0.2"
+  }
+}
