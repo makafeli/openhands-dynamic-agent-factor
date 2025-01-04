@@ -16,7 +16,8 @@ class KeywordManager:
     """Dynamic keyword and agent management system."""
     
     def __init__(self):
-        self.keywords = {}
+        from openhands_dynamic_agent_factory.core.triggers import TRIGGER_MAP
+        self.keywords = {k: v.description for k, v in TRIGGER_MAP.items()}
         self.agents: Dict[str, AgentInfo] = {}
         self.last_updated = datetime.now()
         self.load_state()
@@ -108,10 +109,13 @@ class KeywordManager:
         """Detect a keyword in the input text."""
         print(f"Detecting keyword in input: {input_text}")  # Debug logging
         input_text_lower = input_text.lower().replace(" ", "").replace("-", "").replace("/", "")
+        print(f"Normalized input text: {input_text_lower}")  # Debug logging
         keywords = self.keywords.keys()
+        print(f"Available keywords: {keywords}")  # Debug logging
         for keyword in keywords:
             # Normalize keyword for matching
             keyword_normalized = keyword.lower().replace(" ", "").replace("-", "").replace("/", "")
+            print(f"Checking keyword: {keyword} (normalized: {keyword_normalized})")  # Debug logging
             if keyword_normalized in input_text_lower:
                 print(f"Keyword detected: {keyword}")  # Debug logging
                 return keyword
