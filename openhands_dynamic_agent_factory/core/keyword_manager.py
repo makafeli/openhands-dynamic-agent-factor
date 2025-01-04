@@ -66,23 +66,8 @@ class KeywordManager:
         except FileNotFoundError:
             print("No state file found. Initializing with base keywords.")
             # Initialize with base set of predefined keywords if no state file exists
-            self.keywords = {
-                "python": "Advanced Python code analyzer",
-                "react": "React.js code analyzer",
-                "node": "Node.js backend code analyzer",
-                "sql": "SQL query analyzer and optimizer",
-                "code_editors": "Lightweight editors for writing and editing code",
-                "ides": "Integrated Development Environments (IDEs)",
-                "vcs": "Version Control Systems (VCS) and code collaboration",
-                "ai_coding_assistants": "AI assistants for code suggestions and debugging",
-                "project_management": "Tools for organizing tasks and workflows",
-                "build_automation": "Tools for automating build and test processes",
-                "containerization": "Containerization and orchestration tools",
-                "development_tools": "Frameworks and tools for building applications",
-                "database_management": "Tools to manage databases and perform queries",
-                "testing": "Automated testing for code quality",
-                "cloud": "Platforms for scalable computing and hosting"
-            }
+            from openhands_dynamic_agent_factory.core.triggers import TRIGGER_MAP
+            self.keywords = {k: v.description for k, v in TRIGGER_MAP.items()}
         except Exception as e:
             print(f"Error loading state: {e}")
 
