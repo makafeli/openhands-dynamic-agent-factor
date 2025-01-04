@@ -1,142 +1,265 @@
 """
-dynamic_agent_factory.py
-
-A single-file demo showing how to build a meta-agent that auto-generates
-new micro-agents in OpenHands, based on technology stack keywords.
+Enhanced implementation of the dynamic agent factory with improved integration,
+error handling, and documentation.
 """
 
 import os
 import uuid
 import importlib.util
-from typing import Dict
+import logging
+from typing import Dict, Optional, Type, Any
+from pathlib import Path
+from datetime import datetime
 
-# If you haven't installed OpenHands yet, you'll need:
-#   pip install openhands
 try:
     from openhands import MicroAgent
 except ImportError:
-    # Stub fallback if openhands isn't installed. Remove or replace in your environment.
+    # Enhanced stub class for testing
     class MicroAgent:
+        """Stub MicroAgent class for testing."""
         def __init__(self, name: str = "", description: str = "", inputs=None, outputs=None):
             self.name = name
             self.description = description
             self.inputs = inputs or []
             self.outputs = outputs or []
-        def run(self, data: Dict):
+        def run(self, data: Dict[str, Any]) -> Dict[str, Any]:
             raise NotImplementedError("Stub class. Install openhands to use MicroAgent.")
 
+from .factory import DynamicAgentFactoryLLM, AgentGenerationError
+from .keyword_manager import KeywordManager
+from .triggers import TRIGGER_MAP
 
-# A mapping of keywords to unique agent class names
-TRIGGER_MAP = {
-    "python": "PythonAnalyzer",
-    "react": "ReactAnalyzer",
-    "node": "NodeAnalyzer"
-}
-
-
-def generate_agent_code(agent_class_name: str, tech_keyword: str) -> str:
-    """
-    Dynamically creates a string representing a MicroAgent subclass in Python.
-    This code includes a basic `run()` method with placeholder logic.
-    """
-    # Capitalize the technology name for descriptive output
-    capitalized = tech_keyword.capitalize()
-    
-    code_template = f'''\
-from openhands import MicroAgent
-
-class {agent_class_name}(MicroAgent):
-    def __init__(self):
-        super().__init__(
-            name="{tech_keyword.lower()}_analyzer",
-            description="Auto-generated agent for analyzing {capitalized} code/projects",
-            inputs=["code_snippet"],
-            outputs=["analysis_report"]
-        )
-
-    def run(self, data):
-        code_snippet = data["code_snippet"]
-        # Simple placeholder logic
-        analysis = f"Automatically analyzing {capitalized} code: {{code_snippet[:50]}}..."
-        return {{"analysis_report": analysis}}
-'''
-    return code_template
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 class DynamicAgentFactory(MicroAgent):
     """
-    A meta-agent that listens for a technology trigger (like 'python', 'react', 'node')
-    and then auto-generates a micro-agent for analyzing that technology.
+    Enhanced meta-agent that creates specialized agents based on technology keywords.
+    
+    Features:
+    - Improved integration with KeywordManager and DynamicAgentFactoryLLM
+    - Enhanced error handling and validation
+    - Better state management and persistence
+    - Comprehensive logging
+    - Performance optimizations
     """
 
     def __init__(self):
+        """Initialize with enhanced configuration and validation."""
         super().__init__(
             name="dynamic_agent_factory",
             description=(
-                "Creates new micro-agents when triggered by specific technology keywords "
-                "(e.g., python, react, node)."
+                "Creates specialized micro-agents based on technology keywords "
+                "with enhanced validation and error handling."
             ),
-            inputs=["technology_keyword"],
-            outputs=["agent_class"]
+            inputs=["technology_keyword", "options"],
+            outputs=["agent_class", "generation_info"]
         )
-
-    def run(self, data: Dict):
-        tech = data["technology_keyword"].lower()
         
-        # Check if we have a matching trigger
-        if tech in TRIGGER_MAP:
-            agent_class_name = TRIGGER_MAP[tech]
+        # Initialize components
+        self.keyword_manager = KeywordManager()
+        self.llm_factory = DynamicAgentFactoryLLM()
+        self.temp_dir = Path("/tmp/dynamic_agent_factory")
+        self.temp_dir.mkdir(exist_ok=True)
 
-            # 1) Generate the code string
-            code_str = generate_agent_code(agent_class_name, tech)
-
-            # 2) Write the code to a temporary file
-            file_name = f"{agent_class_name.lower()}_{uuid.uuid4().hex}.py"
-            with open(file_name, "w", encoding="utf-8") as f:
-                f.write(code_str)
-
-            # 3) Dynamically import that file as a module
-            spec = importlib.util.spec_from_file_location(agent_class_name, file_name)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-
-            # 4) Extract the class from the module
-            agent_cls = getattr(module, agent_class_name)
+    def _validate_input(self, data: Dict[str, Any]) -> None:
+        """
+        Validate input data with enhanced checks.
+        
+        Args:
+            data: Input data dictionary
             
-            # Optionally, remove the temp file after import:
-            os.remove(file_name)
+        Raises:
+            ValueError: If validation fails
+        """
+        if "technology_keyword" not in data:
+            raise ValueError("Missing required input: technology_keyword")
+            
+        if not isinstance(data["technology_keyword"], str):
+            raise ValueError("technology_keyword must be a string")
+            
+        if not data["technology_keyword"].strip():
+            raise ValueError("technology_keyword cannot be empty")
 
-            # Return the newly created class
-            return {"agent_class": agent_cls}
+    def _cleanup_temp_files(self) -> None:
+        """Clean up temporary files with error handling."""
+        try:
+            for file in self.temp_dir.glob("*.py"):
+                try:
+                    file.unlink()
+                except Exception as e:
+                    logger.warning(f"Failed to delete temporary file {file}: {e}")
+        except Exception as e:
+            logger.error(f"Error during cleanup: {e}")
 
-        else:
+    def run(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Run the agent factory with enhanced error handling and validation.
+        
+        Args:
+            data: Dictionary containing:
+                - technology_keyword: The technology to generate an agent for
+                - options: Optional configuration for agent generation
+                
+        Returns:
+            Dictionary containing:
+                - agent_class: The generated agent class or None
+                - generation_info: Detailed information about the generation process
+        """
+        start_time = datetime.now()
+        generation_info = {
+            "status": "pending",
+            "start_time": start_time.isoformat()
+        }
+        
+        try:
+            # Validate input
+            self._validate_input(data)
+            tech = data["technology_keyword"].lower()
+            options = data.get("options", {})
+            
+            # Update generation info
+            generation_info.update({
+                "technology": tech,
+                "options": options
+            })
+            
+            # Detect and validate keyword
+            detected_keyword = self.keyword_manager.detect_keyword(tech)
+            if not detected_keyword:
+                logger.warning(f"Unknown technology keyword: {tech}")
+                return {
+                    "agent_class": None,
+                    "generation_info": {
+                        **generation_info,
+                        "status": "error",
+                        "error": f"Unknown technology: {tech}",
+                        "end_time": datetime.now().isoformat()
+                    }
+                }
+            
+            # Get or create agent info
+            agent_status = self.keyword_manager.get_agent(detected_keyword, {
+                "options": options,
+                "generation_time": start_time.isoformat()
+            })
+            
+            logger.info(f"Agent status: {agent_status}")
+            generation_info["agent_status"] = agent_status
+            
+            # Generate agent using LLM factory
+            try:
+                result = self.llm_factory.run({
+                    "technology_keyword": detected_keyword,
+                    "options": options
+                })
+                
+                # Update agent status based on result
+                status = "active" if result["agent_class"] else "error"
+                error = result.get("generation_info", {}).get("error")
+                self.keyword_manager.update_agent_status(
+                    detected_keyword,
+                    status,
+                    error
+                )
+                
+                # Add timing information
+                end_time = datetime.now()
+                generation_info.update({
+                    "status": status,
+                    "end_time": end_time.isoformat(),
+                    "duration_seconds": (end_time - start_time).total_seconds()
+                })
+                
+                if result["agent_class"]:
+                    generation_info["validation_results"] = result["generation_info"]["validation_results"]
+                
+                return {
+                    "agent_class": result["agent_class"],
+                    "generation_info": generation_info
+                }
+                
+            except AgentGenerationError as e:
+                logger.error(f"Agent generation failed: {e}")
+                self.keyword_manager.update_agent_status(
+                    detected_keyword,
+                    "error",
+                    str(e)
+                )
+                
+                return {
+                    "agent_class": None,
+                    "generation_info": {
+                        **generation_info,
+                        "status": "error",
+                        "error": str(e),
+                        "error_type": e.error_type,
+                        "error_details": e.details,
+                        "end_time": datetime.now().isoformat()
+                    }
+                }
+                
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
             return {
-                "agent_class": None
+                "agent_class": None,
+                "generation_info": {
+                    **generation_info,
+                    "status": "error",
+                    "error": f"Unexpected error: {str(e)}",
+                    "end_time": datetime.now().isoformat()
+                }
             }
+            
+        finally:
+            self._cleanup_temp_files()
 
 
 def main():
     """
-    Demo usage: We create a DynamicAgentFactory, ask it for a 'python' agent,
-    and then run that new agent with a sample code snippet.
+    Demo usage with enhanced error handling and validation.
     """
-    factory = DynamicAgentFactory()
-
-    # Example: user wants a Python-based analyzer agent
-    output = factory.run({"technology_keyword": "python"})
-    generated_agent_class = output["agent_class"]
-
-    if generated_agent_class is None:
-        print("No agent generated. No matching keyword found.")
-        return
-
-    # Instantiate the newly created micro-agent
-    python_analyzer = generated_agent_class()
-
-    # Run it with some sample code
-    analysis_result = python_analyzer.run({"code_snippet": "def hello_world(): print('Hello World!')"})
-    print("Analysis Report:", analysis_result["analysis_report"])
+    try:
+        factory = DynamicAgentFactory()
+        
+        # Example: Generate a Python analyzer agent
+        output = factory.run({
+            "technology_keyword": "python",
+            "options": {
+                "analysis_type": "security",
+                "max_code_length": 5000
+            }
+        })
+        
+        if output["agent_class"] is None:
+            print("Agent generation failed:")
+            print(f"Error: {output['generation_info'].get('error')}")
+            return
+        
+        # Create and test the generated agent
+        generated_agent = output["agent_class"]()
+        
+        # Run with sample code
+        analysis_result = generated_agent.run({
+            "code_snippet": "def hello_world(): print('Hello World!')",
+            "analysis_type": "security"
+        })
+        
+        print("\nGeneration Info:")
+        print(json.dumps(output["generation_info"], indent=2))
+        
+        print("\nAnalysis Result:")
+        print(json.dumps(analysis_result, indent=2))
+        
+    except Exception as e:
+        print(f"Demo failed: {e}")
 
 
 if __name__ == "__main__":
+    import json
     main()
