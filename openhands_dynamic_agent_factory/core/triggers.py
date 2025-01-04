@@ -266,5 +266,32 @@ TRIGGER_MAP = {
         - Include platform-specific validations
         - Handle different deployment platforms
         """
+    ),
+    "tailwind": TriggerInfo(
+        class_name="TailwindAnalyzer",
+        description="Tailwind CSS analyzer for best practices and optimizations",
+        inputs=["css_snippet", "config"],
+        outputs=["analysis_report", "optimization_suggestions", "performance_metrics"],
+        required_imports=["cssutils", "tailwindcss"],
+        validation_rules={
+            "max_css_length": 10000,
+            "supported_versions": ["3.x", "2.x"]
+        },
+        llm_prompt_template="""
+        Generate a Python OpenHands MicroAgent class named '{class_name}' that analyzes Tailwind CSS code.
+        The agent should:
+        1. Parse Tailwind CSS classes
+        2. Check for unused classes
+        3. Suggest optimizations
+        4. Analyze performance
+        5. Handle errors gracefully
+
+        Requirements:
+        - Subclass MicroAgent
+        - Accept 'css_snippet' and 'config' inputs
+        - Return dict with 'analysis_report', 'optimization_suggestions', and 'performance_metrics'
+        - Include proper error handling
+        - Follow best practices for Tailwind CSS
+        """
     )
 }

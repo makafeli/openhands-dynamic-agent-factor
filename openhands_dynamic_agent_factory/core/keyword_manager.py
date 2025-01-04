@@ -93,7 +93,7 @@ class KeywordManager:
     def detect_keyword(self, input_text: str) -> Optional[str]:
         """Detect a keyword in the input text."""
         print(f"Detecting keyword in input: {input_text}")  # Debug logging
-        input_text_lower = input_text.lower().replace(" ", "").replace("-", "").replace("/", "")
+        input_text_lower = input_text.lower().replace(" ", "").replace("-", "").replace("/", "").replace("_", "")
         print(f"Normalized input text: {input_text_lower}")  # Debug logging
         keywords = self.keywords.keys()
         print(f"Available keywords: {keywords}")  # Debug logging
@@ -101,7 +101,7 @@ class KeywordManager:
             # Normalize keyword for matching
             keyword_normalized = keyword.lower().replace(" ", "").replace("-", "").replace("/", "")
             print(f"Checking keyword: {keyword} (normalized: {keyword_normalized})")  # Debug logging
-            if keyword_normalized in input_text_lower:
+            if keyword_normalized in input_text_lower or input_text_lower in keyword_normalized or keyword_normalized.replace("_", "") in input_text_lower:
                 print(f"Keyword detected: {keyword}")  # Debug logging
                 return keyword
         print("No keyword detected.")  # Debug logging
