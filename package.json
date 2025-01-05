@@ -1,20 +1,45 @@
 {
-  "name": "dynamic-agent",
-  "version": "1.0.0",
-  "description": "Dynamic Agent Management System for technology-specific code analysis and tasks.",
-  "main": "index.js",
+  "name": "openhands-dynamic-agent-factor",
+  "version": "1.0.1",
+  "description": "A powerful system for analyzing and generating technology-specific agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "node index.js"
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/openhands-dynamic-agent-factor.git"
   },
   "keywords": [
-    "dynamic-agent",
-    "code-analysis",
     "technology",
-    "automation"
+    "analysis",
+    "agent",
+    "framework",
+    "stack"
   ],
-  "author": "OpenHands",
+  "author": "Your Name",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/openhands-dynamic-agent-factor/issues"
+  },
+  "homepage": "https://github.com/yourusername/openhands-dynamic-agent-factor#readme",
   "dependencies": {
-    "child_process": "^1.0.2"
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.3",
+    "@types/node": "^20.4.5",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
+    "eslint": "^8.45.0",
+    "jest": "^29.6.2",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.1.6"
   }
 }
