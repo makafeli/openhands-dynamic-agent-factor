@@ -1,5 +1,5 @@
 {
-  "name": "@openhands/dynamic-agent-factor",
+  "name": "dynamic-agent",
   "version": "1.0.1",
   "description": "A powerful system for analyzing and generating technology-specific agents",
   "main": "dist/index.js",

@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
     
@@ -29,6 +32,9 @@ jobs:
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
 
@@ -45,13 +51,16 @@ jobs:
       run: npm run build
 
     - name: Publish to NPM
-      run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npm publish --access public
 
   publish-pypi:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
     - uses: actions/checkout@v3
 
@@ -77,6 +86,9 @@ jobs:
   update-docs:
     needs: [publish-npm, publish-pypi]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
     - uses: actions/checkout@v3
 
@@ -102,5 +114,5 @@ jobs:
     - name: Notify completion
       run: |
         echo "Package publishing completed successfully"
-        echo "NPM package: https://www.npmjs.com/package/openhands-dynamic-agent-factor"
+        echo "NPM package: https://www.npmjs.com/package/dynamic-agent"
         echo "PyPI package: https://pypi.org/project/openhands-dynamic-agent-factor/"
