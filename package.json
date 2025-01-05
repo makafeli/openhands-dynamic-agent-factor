@@ -1,5 +1,5 @@
 {
-  "name": "openhands-dynamic-agent-factor",
+  "name": "@openhands/dynamic-agent-factor",
   "version": "1.0.1",
   "description": "A powerful system for analyzing and generating technology-specific agents",
   "main": "dist/index.js",
@@ -54,6 +54,7 @@
     "typescript": "^5.1.6"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
