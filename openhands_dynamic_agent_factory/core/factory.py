@@ -57,12 +57,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class AgentGenerationError(Exception):
+from .utils import (
+    BaseError, ValidationError, StateError,
+    OperationResult, Cache, StateManager,
+    retry, CodeValidator, StructureValidator,
+    monitor_performance
+)
+
+class AgentGenerationError(BaseError):
     """Custom exception for agent generation errors with enhanced context."""
-    def __init__(self, message: str, error_type: str, details: Optional[Dict] = None):
-        self.error_type = error_type
-        self.details = details or {}
-        super().__init__(f"{error_type}: {message}")
+    def __init__(
+        self,
+        message: str,
+        error_type: str,
+        details: Optional[Dict[str, Any]] = None,
+        recovery_hint: Optional[str] = None
+    ):
+        super().__init__(
+            message,
+            error_type,
+            details,
+            recovery_hint or "Check LLM configuration and prompt templates"
+        )
 
 
 @dataclass
@@ -76,82 +92,73 @@ class GenerationResult:
     metadata: Optional[Dict[str, Any]] = None
 
 
-class CodeValidator:
-    """Handles validation of generated code with enhanced security checks."""
-
-    @staticmethod
-    def validate_security(code_str: str) -> None:
-        """
-        Perform comprehensive security validation of generated code.
-        
-        Args:
-            code_str: The generated Python code
-            
-        Raises:
-            AgentGenerationError: If security validation fails
-        """
-        # Enhanced security checks
-        forbidden_patterns = [
-            (r"os\s*\.\s*system", "System command execution"),
-            (r"subprocess", "Subprocess execution"),
-            (r"eval\s*\(", "Code evaluation"),
-            (r"exec\s*\(", "Code execution"),
-            (r"__import__", "Dynamic imports"),
-            (r"open\s*\(", "File operations"),
-            (r"socket\.", "Network operations"),
-            (r"requests?\.", "HTTP requests"),
-            (r"urllib", "URL operations"),
-        ]
-        
-        import re
-        for pattern, description in forbidden_patterns:
-            if re.search(pattern, code_str):
-                raise AgentGenerationError(
-                    f"Found forbidden pattern: {description}",
-                    "SecurityValidationError",
-                    {"pattern": pattern}
-                )
-
-    @staticmethod
-    def validate_structure(code_str: str, trigger_info: TriggerInfo) -> None:
-        """
-        Validate the structure and requirements of generated code.
-        
-        Args:
-            code_str: The generated Python code
-            trigger_info: The trigger information containing validation rules
-            
-        Raises:
-            AgentGenerationError: If structure validation fails
-        """
-        required_elements = {
+class AgentValidator:
+    """Enhanced validator for generated agents."""
+    
+    def __init__(self):
+        self.code_validator = CodeValidator()
+        self.structure_validator = StructureValidator({
             "class": "class definition",
             "MicroAgent": "MicroAgent inheritance",
             "def run": "run method",
             "def __init__": "constructor",
             "super().__init__": "parent initialization"
-        }
-        
-        for element, description in required_elements.items():
-            if element not in code_str:
-                raise AgentGenerationError(
-                    f"Missing required {description}",
-                    "StructureValidationError",
-                    {"missing_element": element}
-                )
+        })
 
-        # Validate imports
+    def validate(self, code_str: str, trigger_info: TriggerInfo) -> OperationResult[bool]:
+        """Comprehensive validation of generated code."""
+        # Security validation
+        security_result = self.code_validator.validate(code_str)
+        if not security_result.success:
+            return security_result
+            
+        # Structure validation
+        structure_result = self.structure_validator.validate(code_str)
+        if not structure_result.success:
+            return structure_result
+            
+        # Import validation
         if trigger_info.required_imports:
-            missing_imports = [
-                imp for imp in trigger_info.required_imports
-                if f"import {imp}" not in code_str and f"from {imp}" not in code_str
-            ]
-            if missing_imports:
-                raise AgentGenerationError(
-                    f"Missing required imports: {', '.join(missing_imports)}",
-                    "ImportValidationError",
+            import_result = self._validate_imports(code_str, trigger_info.required_imports)
+            if not import_result.success:
+                return import_result
+                
+        return OperationResult(
+            success=True,
+            data=True,
+            duration=security_result.duration + structure_result.duration,
+            metadata={
+                "validations": ["security", "structure", "imports"]
+            }
+        )
+
+    def _validate_imports(
+        self,
+        code_str: str,
+        required_imports: List[str]
+    ) -> OperationResult[bool]:
+        """Validate required imports."""
+        start_time = time.time()
+        missing_imports = [
+            imp for imp in required_imports
+            if f"import {imp}" not in code_str and f"from {imp}" not in code_str
+        ]
+        
+        if missing_imports:
+            return OperationResult(
+                success=False,
+                error=ValidationError(
+                    "Missing required imports",
                     {"missing_imports": missing_imports}
-                )
+                ),
+                duration=time.time() - start_time
+            )
+            
+        return OperationResult(
+            success=True,
+            data=True,
+            duration=time.time() - start_time
+        )
 
 
 class DynamicAgentFactoryLLM(MicroAgent):
@@ -161,9 +168,10 @@ class DynamicAgentFactoryLLM(MicroAgent):
     Features:
     - Enhanced error handling and validation
     - Comprehensive security checks
-    - Performance optimizations
+    - Performance optimizations with caching
     - Detailed logging and monitoring
     - Structured generation results
+    - Atomic state management
     """
 
     def __init__(self):
@@ -176,9 +184,13 @@ class DynamicAgentFactoryLLM(MicroAgent):
         )
         
         self._initialize_llm()
-        self.validator = CodeValidator()
+        self.validator = AgentValidator()
         self.temp_dir = Path("/tmp/dynamic_agent_factory")
         self.temp_dir.mkdir(exist_ok=True)
+        
+        # Initialize caches
+        self.llm_cache = Cache[str, str](ttl=3600)  # 1 hour TTL
+        self.agent_cache = Cache[str, Type[MicroAgent]](ttl=3600)
 
     def _initialize_llm(self) -> None:
         """Initialize LLM with error handling and validation."""
@@ -197,7 +209,9 @@ class DynamicAgentFactoryLLM(MicroAgent):
                 {"provider": LLM_PROVIDER, "model": LLM_MODEL_NAME}
             )
 
-    def _generate_code(self, trigger_info: TriggerInfo) -> str:
+    @monitor_performance("LLM code generation")
+    @retry(max_attempts=3, delay=1.0, backoff=2.0)
+    def _generate_code(self, trigger_info: TriggerInfo) -> OperationResult[str]:
         """
         Generate code using LLM with enhanced prompt engineering.
         
@@ -227,15 +241,38 @@ class DynamicAgentFactoryLLM(MicroAgent):
                 }
             ]
             
+            # Check cache first
+            cache_key = f"{trigger_info.class_name}:{hash(str(messages))}"
+            cached_code = self.llm_cache.get(cache_key)
+            if cached_code:
+                return OperationResult(
+                    success=True,
+                    data=cached_code,
+                    metadata={"cache_hit": True}
+                )
+            
+            # Generate new code
             response = self.llm.chat(messages=messages)
-            return response.content
+            code = response.content
+            
+            # Cache the result
+            self.llm_cache.set(cache_key, code)
+            
+            return OperationResult(
+                success=True,
+                data=code,
+                metadata={"cache_hit": False}
+            )
 
         except Exception as e:
-            logger.error(f"Code generation failed: {str(e)}")
-            raise AgentGenerationError(
-                f"Code generation failed: {str(e)}",
-                "CodeGenerationError",
-                {"trigger_info": trigger_info.__dict__}
+            return OperationResult(
+                success=False,
+                error=AgentGenerationError(
+                    f"Code generation failed: {str(e)}",
+                    "CodeGenerationError",
+                    {"trigger_info": trigger_info.__dict__},
+                    "Check LLM service and prompt templates"
+                )
             )
 
     def _load_agent_class(self, code_str: str, trigger_info: TriggerInfo) -> Type[MicroAgent]:

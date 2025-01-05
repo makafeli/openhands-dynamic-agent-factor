@@ -1,247 +1,337 @@
 # OpenHands Dynamic Agent Factory
 
-A powerful extension for OpenHands that provides dynamic agent generation capabilities based on technology keywords. This module automatically creates specialized micro-agents for analyzing different technologies like Python, React, Node.js, and SQL using LLM-powered code generation.
+A powerful system for analyzing and generating technology-specific agents with comprehensive analysis capabilities.
 
 ## Features
 
-- 🤖 **Dynamic Agent Generation**: Automatically create specialized micro-agents based on technology keywords
-- 🔄 **OpenHands Integration**: Seamless integration with OpenHands' LLM configuration system
-- 🛡️ **Security First**: Built-in code validation and security checks
-- 🎯 **Technology-Specific**: Pre-configured for Python, React, Node.js, and SQL analysis
-- 🔌 **Extensible**: Easy to add new technology triggers and customizations
-- ⚡ **Production Ready**: Comprehensive error handling and validation
+### 1. Technology Stack Analysis
+- Comprehensive analysis of technology stacks
+- Support for multiple technology types:
+  * Programming Languages (Python, JavaScript, etc.)
+  * Frontend Frameworks (React, Vue, etc.)
+  * Backend Frameworks (Django, Express, etc.)
+  * CSS Frameworks (Tailwind, Bootstrap, etc.)
+  * Databases (PostgreSQL, MongoDB, etc.)
+  * Testing Tools (Jest, PyTest, etc.)
+  * DevOps Tools (Docker, Kubernetes, etc.)
+  * Cloud Services (AWS, GCP, etc.)
+
+### 2. Analysis Capabilities
+- Stack compatibility checking
+- Dependency analysis
+- Version management
+- Security advisories
+- Learning resources
+- Best practices recommendations
+- Technology ecosystem mapping
+
+### 3. Web Interface
+- Interactive dashboard for analysis
+- Real-time visualization
+- Historical tracking
+- Template management
+- Analysis reports
+- Stack suggestions
+
+### 4. CLI Tool
+```bash
+# Install CLI
+npm install -g openhands-cli
+
+# Basic analysis
+openhands analyze "Building with React and Django"
+
+# Analysis with template
+openhands analyze --template strict "Using Tailwind CSS"
+
+# Launch dashboard
+openhands dashboard
+
+# Create custom template
+openhands template create custom --description "Custom analysis"
+```
+
+### 5. NPM Package
+```bash
+# Install package
+npm install openhands-dynamic-agent-factor
+
+# Usage
+const { TechStackAnalyzer } = require('openhands-dynamic-agent-factor');
+
+const analyzer = new TechStackAnalyzer();
+const result = await analyzer.analyze(
+    "Building a web app with React and Node.js"
+);
+```
+
+### 6. CI/CD Integration
+- GitHub Actions integration
+- GitLab CI integration
+- Automated analysis in PRs
+- Custom reporting
+- Status checks
+
+```yaml
+# .github/workflows/tech-analysis.yml
+name: Technology Stack Analysis
+
+on: [pull_request]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: openhands/tech-analysis-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### 7. Python API
+```python
+from openhands_dynamic_agent_factory import TechStackAnalyzer
+
+# Initialize analyzer
+analyzer = TechStackAnalyzer()
+
+# Analyze tech stack
+result = analyzer.process_text(
+    "Building a web app with Python/Django backend, "
+    "React frontend, PostgreSQL database, and testing with Jest"
+)
+
+# Get stack suggestions
+suggestion = analyzer.suggest_stack({
+    "project_type": "web",
+    "scale": "medium",
+    "team_expertise": ["python", "javascript"],
+    "constraints": {
+        "exclude": ["legacy"]
+    }
+})
+```
 
 ## Installation
 
-### Prerequisites
-
-- Python 3.7 or higher
-- OpenHands framework
-- Access to an LLM provider (e.g., OpenAI)
-
-### Basic Installation
-
+### NPM Package
 ```bash
-pip install openhands-dynamic-agent-factory
+npm install openhands-dynamic-agent-factor
 ```
 
-### Technology-Specific Dependencies
-
-Choose the dependencies based on your needs:
-
+### Python Package
 ```bash
-# Python analysis support
-pip install "openhands-dynamic-agent-factory[python]"
-
-# React analysis support
-pip install "openhands-dynamic-agent-factory[react]"
-
-# Node.js analysis support
-pip install "openhands-dynamic-agent-factory[node]"
-
-# SQL analysis support
-pip install "openhands-dynamic-agent-factory[sql]"
-
-# All technologies
-pip install "openhands-dynamic-agent-factory[all]"
+pip install openhands-dynamic-agent-factor
 ```
 
-## Quick Start
-
-### Basic Usage
-
-```python
-from openhands_dynamic_agent_factory import DynamicAgentFactoryLLM
-
-# Initialize the factory
-factory = DynamicAgentFactoryLLM()
-
-# Generate a Python code analyzer
-result = factory.run({
-    "technology_keyword": "python",
-    "options": {
-        "analysis_type": "security"
-    }
-})
-
-# Use the generated agent
-if result["agent_class"]:
-    agent = result["agent_class"]()
-    analysis = agent.run({
-        "code_snippet": """
-        def process_data(user_input):
-            return eval(user_input)  # Security risk!
-        """,
-        "analysis_type": "security"
-    })
-    print(analysis)
+### CLI Tool
+```bash
+npm install -g openhands-cli
 ```
 
-### Configuration
+## Web Dashboard
 
-Configure your OpenHands LLM settings in your project:
+The web dashboard provides an interactive interface for:
+- Real-time technology analysis
+- Stack compatibility checking
+- Learning resource suggestions
+- Historical analysis tracking
+- Template management
+- Custom reporting
 
-```python
-# config.py
-from openhands.config import Config
-
-config = Config({
-    "llm": {
-        "provider": "openai",
-        "model": "gpt-4",
-        "api_key": "your-api-key",
-        "temperature": 0.7
-    }
-})
+To launch the dashboard:
+```bash
+openhands dashboard
 ```
 
-The factory will automatically use these settings from your OpenHands configuration.
-
-## Supported Technologies
-
-### Python Analysis
-- **Input**: Python code snippets
-- **Analysis Types**: 
-  - Style (PEP 8 compliance)
-  - Security (vulnerability detection)
-  - Performance (optimization suggestions)
-- **Outputs**: Detailed analysis report with:
-  - Code quality metrics
-  - Security vulnerabilities
-  - Performance recommendations
-
-### React Analysis
-- **Input**: React/JSX components
-- **Features**: 
-  - Component structure analysis
-  - Hooks usage patterns
-  - Performance optimization
-- **Outputs**: 
-  - Best practices compliance
-  - Performance bottlenecks
-  - Accessibility issues
-
-### Node.js Analysis
-- **Input**: Node.js/JavaScript code
-- **Focus Areas**: 
-  - Security vulnerabilities
-  - Async/await patterns
-  - Scalability issues
-- **Outputs**: 
-  - Security audit report
-  - Performance metrics
-  - Best practices suggestions
-
-### SQL Analysis
-- **Input**: SQL queries
-- **Features**: 
-  - Query optimization
-  - Injection prevention
-  - Performance analysis
-- **Outputs**: 
-  - Optimization suggestions
-  - Security recommendations
-  - Execution plan analysis
-
-## Advanced Usage
-
-### Custom Technology Triggers
-
-Add your own technology-specific analyzers:
-
+Or programmatically:
 ```python
-from openhands_dynamic_agent_factory import TRIGGER_MAP, TriggerInfo
+from openhands_dynamic_agent_factory import launch_dashboard
+launch_dashboard(port=8000)
+```
 
-# Define a new Java analyzer
-TRIGGER_MAP["java"] = TriggerInfo(
-    class_name="JavaAnalyzer",
-    description="Advanced Java code analyzer",
-    inputs=["code_snippet", "analysis_type"],
-    outputs=["analysis_report", "suggestions"],
-    required_imports=["javalang"],
-    validation_rules={
-        "max_code_length": 10000,
-        "required_fields": ["code_snippet"]
+## Templates
+
+Customize analysis with templates:
+
+```json
+{
+  "name": "strict",
+  "description": "Strict analysis mode",
+  "validation_rules": {
+    "code_length": {
+      "max_length": 10000,
+      "severity": "error"
     },
-    llm_prompt_template="""
-    Create a Java code analyzer that:
-    1. Parses the input using javalang
-    2. Analyzes for {analysis_type}
-    3. Returns detailed suggestions
-    """
-)
+    "compatibility": {
+      "required": true,
+      "severity": "warning"
+    }
+  }
+}
 ```
 
-### Error Handling
+## CI/CD Integration
 
-The factory provides comprehensive error handling:
+### GitHub Actions
+
+```yaml
+# .github/workflows/tech-analysis.yml
+name: Technology Stack Analysis
+
+on: [pull_request]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: openhands/tech-analysis-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: .openhands.yml
+```
+
+### GitLab CI
+
+```yaml
+# .gitlab-ci.yml
+tech-analysis:
+  image: openhands/tech-analyzer:latest
+  script:
+    - openhands analyze
+  artifacts:
+    reports:
+      json: tech-analysis.json
+```
+
+## Configuration
+
+### .openhands.yml
+```yaml
+analysis:
+  types:
+    - language
+    - framework
+    - database
+    - testing
+  
+  templates:
+    - strict
+    - security
+    
+  reporting:
+    format: markdown
+    include_suggestions: true
+    include_resources: true
+    
+  ci:
+    comment_on_pr: true
+    fail_on_error: false
+    create_report: true
+```
+
+## API Documentation
+
+### Python API
 
 ```python
-try:
-    result = factory.run({
-        "technology_keyword": "python",
-        "options": {"analysis_type": "security"}
-    })
-    if result["agent_class"] is None:
-        error_info = result["generation_info"]
-        print(f"Agent generation failed: {error_info['error']}")
-        print(f"Details: {error_info.get('details', 'No additional details')}")
-except Exception as e:
-    print(f"Unexpected error: {str(e)}")
+from openhands_dynamic_agent_factory import TechStackAnalyzer
+
+class TechStackAnalyzer:
+    """
+    Analyze technology stacks and provide insights.
+    
+    Features:
+    - Technology detection
+    - Stack compatibility
+    - Best practices
+    - Learning resources
+    """
+    
+    def process_text(
+        self,
+        text: str,
+        context: str = "",
+        tech_types: Optional[List[str]] = None,
+        categories: Optional[List[str]] = None,
+        use_cache: bool = True
+    ) -> OperationResult[Dict[str, Any]]:
+        """
+        Process text to identify technology stack components.
+        
+        Args:
+            text: Input text to analyze
+            context: Optional context about the text
+            tech_types: Optional list of technology types to look for
+            categories: Optional list of categories to look for
+            use_cache: Whether to use cached results
+        """
+        pass
+        
+    def suggest_stack(
+        self,
+        requirements: Dict[str, Any]
+    ) -> OperationResult[Dict[str, Any]]:
+        """
+        Suggest a technology stack based on requirements.
+        
+        Args:
+            requirements: Dictionary containing:
+                - project_type: Type of project (web, mobile, etc.)
+                - scale: Expected scale (small, medium, large)
+                - team_expertise: List of technologies team is familiar with
+                - constraints: Any technical constraints
+        """
+        pass
 ```
 
-## Project Structure
+### JavaScript API
 
-```
-openhands-dynamic-agent-factory/
-├── openhands_dynamic_agent_factory/
-│   ├── core/
-│   │   ├── factory.py         # Main factory implementation
-│   │   ├── triggers.py        # Technology trigger definitions
-│   │   └── dynamic_agent_factory_llm.py
-│   └── __init__.py
-├── examples/
-│   └── basic_usage.py         # Usage examples
-├── README.md
-├── LICENSE
-└── pyproject.toml
+```javascript
+const { TechStackAnalyzer } = require('openhands-dynamic-agent-factor');
+
+class TechStackAnalyzer {
+    /**
+     * Analyze technology stacks and provide insights.
+     * 
+     * @param {Object} options Configuration options
+     */
+    constructor(options = {}) {
+        // Initialize analyzer
+    }
+    
+    /**
+     * Process text to identify technology stack components.
+     * 
+     * @param {string} text Input text to analyze
+     * @param {Object} options Analysis options
+     * @returns {Promise<Object>} Analysis results
+     */
+    async analyze(text, options = {}) {
+        // Analyze text
+    }
+    
+    /**
+     * Suggest a technology stack based on requirements.
+     * 
+     * @param {Object} requirements Stack requirements
+     * @returns {Promise<Object>} Stack suggestions
+     */
+    async suggestStack(requirements) {
+        // Generate suggestions
+    }
+}
 ```
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. Make your changes and commit:
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. Push to your branch:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-### Development Setup
-
-1. Clone the repository
-2. Install development dependencies:
-   ```bash
-   pip install -e ".[dev]"
-   ```
-3. Run tests:
-   ```bash
-   pytest tests/
-   ```
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built on top of the [OpenHands](https://github.com/All-Hands-AI/OpenHands) framework
-- Powered by state-of-the-art LLM capabilities
-- Inspired by the need for intelligent, technology-specific code analysis

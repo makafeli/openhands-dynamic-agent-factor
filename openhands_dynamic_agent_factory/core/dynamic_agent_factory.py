@@ -1,13 +1,14 @@
 """
 Enhanced implementation of the dynamic agent factory with improved integration,
-error handling, and documentation.
+error handling, caching, and monitoring.
 """
 
 import os
 import uuid
 import importlib.util
 import logging
-from typing import Dict, Optional, Type, Any
+import time
+from typing import Dict, Optional, Type, Any, List
 from pathlib import Path
 from datetime import datetime
 
@@ -28,6 +29,11 @@ except ImportError:
 from .factory import DynamicAgentFactoryLLM, AgentGenerationError
 from .keyword_manager import KeywordManager
 from .triggers import TRIGGER_MAP
+from .utils import (
+    BaseError, ValidationError, StateError,
+    OperationResult, Cache, StateManager,
+    retry, monitor_performance
+)
 
 # Configure logging
 logging.basicConfig(
@@ -36,6 +42,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+class AgentFactoryError(BaseError):
+    """Custom error for agent factory operations."""
+    def __init__(
+        self,
+        message: str,
+        error_type: str,
+        details: Optional[Dict[str, Any]] = None,
+        recovery_hint: Optional[str] = None
+    ):
+        super().__init__(
+            message,
+            error_type,
+            details,
+            recovery_hint or "Check factory configuration and dependencies"
+        )
 
 class DynamicAgentFactory(MicroAgent):
     """
@@ -49,7 +71,7 @@ class DynamicAgentFactory(MicroAgent):
     - Performance optimizations
     """
 
-    def __init__(self):
+    def __init__(self, state_dir: Optional[Path] = None):
         """Initialize with enhanced configuration and validation."""
         super().__init__(
             name="dynamic_agent_factory",
@@ -61,13 +83,22 @@ class DynamicAgentFactory(MicroAgent):
             outputs=["agent_class", "generation_info"]
         )
         
-        # Initialize components
+        # Initialize components with state management
+        state_dir = state_dir or Path("/tmp/dynamic_agent_factory")
+        self.state_manager = StateManager[Dict[str, Any]](state_dir / "factory_state.json")
         self.keyword_manager = KeywordManager()
         self.llm_factory = DynamicAgentFactoryLLM()
-        self.temp_dir = Path("/tmp/dynamic_agent_factory")
-        self.temp_dir.mkdir(exist_ok=True)
+        
+        # Initialize caches
+        self.agent_cache = Cache[str, Type[MicroAgent]](ttl=3600)  # 1 hour TTL
+        self.result_cache = Cache[str, Dict[str, Any]](ttl=1800)  # 30 minutes TTL
+        
+        # Ensure directories
+        self.temp_dir = state_dir / "temp"
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
 
-    def _validate_input(self, data: Dict[str, Any]) -> None:
+    @monitor_performance("Input validation")
+    def _validate_input(self, data: Dict[str, Any]) -> OperationResult[bool]:
         """
         Validate input data with enhanced checks.
         
@@ -77,26 +108,85 @@ class DynamicAgentFactory(MicroAgent):
         Raises:
             ValueError: If validation fails
         """
-        if "technology_keyword" not in data:
-            raise ValueError("Missing required input: technology_keyword")
+        start_time = time.time()
+        try:
+            if "technology_keyword" not in data:
+                return OperationResult(
+                    success=False,
+                    error=ValidationError(
+                        "Missing required input: technology_keyword",
+                        {"input_data": data}
+                    )
+                )
+                
+            if not isinstance(data["technology_keyword"], str):
+                return OperationResult(
+                    success=False,
+                    error=ValidationError(
+                        "technology_keyword must be a string",
+                        {"type": type(data["technology_keyword"]).__name__}
+                    )
+                )
+                
+            if not data["technology_keyword"].strip():
+                return OperationResult(
+                    success=False,
+                    error=ValidationError(
+                        "technology_keyword cannot be empty"
+                    )
+                )
+                
+            return OperationResult(
+                success=True,
+                data=True,
+                duration=time.time() - start_time
+            )
             
-        if not isinstance(data["technology_keyword"], str):
-            raise ValueError("technology_keyword must be a string")
-            
-        if not data["technology_keyword"].strip():
-            raise ValueError("technology_keyword cannot be empty")
+        except Exception as e:
+            return OperationResult(
+                success=False,
+                error=ValidationError(
+                    f"Validation failed: {str(e)}",
+                    {"exception": str(e)}
+                )
+            )
 
-    def _cleanup_temp_files(self) -> None:
+    @monitor_performance("Temp file cleanup")
+    def _cleanup_temp_files(self) -> OperationResult[bool]:
         """Clean up temporary files with error handling."""
+        start_time = time.time()
+        failed_files = []
+        
         try:
             for file in self.temp_dir.glob("*.py"):
                 try:
                     file.unlink()
                 except Exception as e:
+                    failed_files.append((str(file), str(e)))
                     logger.warning(f"Failed to delete temporary file {file}: {e}")
+            
+            success = len(failed_files) == 0
+            return OperationResult(
+                success=success,
+                data=success,
+                duration=time.time() - start_time,
+                metadata={
+                    "failed_files": failed_files
+                } if failed_files else None
+            )
+            
         except Exception as e:
-            logger.error(f"Error during cleanup: {e}")
+            return OperationResult(
+                success=False,
+                error=AgentFactoryError(
+                    f"Cleanup failed: {str(e)}",
+                    "CleanupError",
+                    {"failed_files": failed_files}
+                )
+            )
 
+    @monitor_performance("Agent factory run")
+    @retry(max_attempts=3, delay=1.0, backoff=2.0)
     def run(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Run the agent factory with enhanced error handling and validation.
@@ -111,23 +201,37 @@ class DynamicAgentFactory(MicroAgent):
                 - agent_class: The generated agent class or None
                 - generation_info: Detailed information about the generation process
         """
-        start_time = datetime.now()
-        generation_info = {
-            "status": "pending",
-            "start_time": start_time.isoformat()
-        }
-        
         try:
             # Validate input
-            self._validate_input(data)
+            validation_result = self._validate_input(data)
+            if not validation_result.success:
+                return {
+                    "agent_class": None,
+                    "generation_info": {
+                        "status": "error",
+                        "error": str(validation_result.error),
+                        "validation_error": validation_result.error.to_dict(),
+                        "start_time": datetime.now().isoformat()
+                    }
+                }
+                
             tech = data["technology_keyword"].lower()
             options = data.get("options", {})
             
-            # Update generation info
-            generation_info.update({
+            # Check result cache
+            cache_key = f"{tech}:{hash(str(options))}"
+            cached_result = self.result_cache.get(cache_key)
+            if cached_result:
+                logger.info(f"Using cached result for {tech}")
+                return cached_result
+            
+            # Initialize generation info
+            generation_info = {
+                "status": "pending",
+                "start_time": datetime.now().isoformat(),
                 "technology": tech,
                 "options": options
-            })
+            }
             
             # Detect and validate keyword
             detected_keyword = self.keyword_manager.detect_keyword(tech)
