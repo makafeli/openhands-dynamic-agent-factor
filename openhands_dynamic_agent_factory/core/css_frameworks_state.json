@@ -1,0 +1,1516 @@
+{
+  "frameworks": {
+    "modernnormalize": {
+      "name": "modern-normalize",
+      "category": "Base / Reset / Normalize",
+      "description": "Normalize browsers' default style",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/sindresorhus/modern-normalize",
+      "npm_package": null,
+      "stars": 6409,
+      "last_updated": "2025-01-04T22:21:45",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "github_stars": 6409,
+        "open_issues": 32,
+        "forks": 370
+      }
+    },
+    "ress": {
+      "name": "ress",
+      "category": "Base / Reset / Normalize",
+      "description": "Modern CSS reset",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/filipelinhares/ress",
+      "npm_package": "ress",
+      "stars": 2033,
+      "last_updated": "2024-12-30T15:55:13",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/filipelinhares/ress",
+      "popularity_metrics": {
+        "github_stars": 2033,
+        "open_issues": 1,
+        "forks": 433,
+        "npm_package": "5.0.2"
+      }
+    },
+    "naturalselection": {
+      "name": "Natural Selection",
+      "category": "Base / Reset / Normalize",
+      "description": "Collection of best-practice CSS selectors",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/frontaid/natural-selection",
+      "npm_package": null,
+      "stars": 205,
+      "last_updated": "2025-01-03T02:45:09",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "github_stars": 205,
+        "open_issues": 0,
+        "forks": 11
+      }
+    },
+    "mvp": {
+      "name": "MVP.css",
+      "category": "Class-less",
+      "description": "Minimalist stylesheet for HTML elements",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "mvp",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.367995",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/cgeorg/mvp",
+      "popularity_metrics": {
+        "npm_package": "0.1.2"
+      }
+    },
+    "sakura": {
+      "name": "sakura",
+      "category": "Class-less",
+      "description": "Minimal classless CSS framework/theme",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "sakura",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.438911",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/bnaoki/sakura",
+      "popularity_metrics": {
+        "npm_package": "0.0.1"
+      }
+    },
+    "simple": {
+      "name": "Simple.css",
+      "category": "Class-less",
+      "description": "Lightweight, classless CSS framework",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "simple",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.517570",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.2.0"
+      }
+    },
+    "tacit": {
+      "name": "Tacit",
+      "category": "Class-less",
+      "description": "CSS framework for dummies, without classes",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "tacit",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.582597",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/christyharagan/tacit",
+      "popularity_metrics": {
+        "npm_package": "0.2.1"
+      }
+    },
+    "pure": {
+      "name": "Pure",
+      "category": "Very Lightweight",
+      "description": "Set of small, responsive CSS modules that you can use in every web project",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "pure",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.649154",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/pure/pure#readme",
+      "popularity_metrics": {
+        "npm_package": "2.85.0"
+      }
+    },
+    "picnic": {
+      "name": "Picnic CSS",
+      "category": "Very Lightweight",
+      "description": "Lightweight and beautiful library",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "picnic",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.712736",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://www.picnicss.com/",
+      "popularity_metrics": {
+        "npm_package": "7.1.0"
+      }
+    },
+    "chota": {
+      "name": "Chota",
+      "category": "Very Lightweight",
+      "description": "Really small CSS framework",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "chota",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.796729",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://jenil.github.io/chota",
+      "popularity_metrics": {
+        "npm_package": "0.9.2"
+      }
+    },
+    "bootstrap": {
+      "name": "Bootstrap",
+      "category": "General Purpose",
+      "description": "The most popular HTML, CSS, and JavaScript framework for developing responsive, mobile first projects on the web",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "bootstrap",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.862387",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://getbootstrap.com/",
+      "popularity_metrics": {
+        "npm_package": "5.3.3"
+      }
+    },
+    "bulma": {
+      "name": "Bulma",
+      "category": "General Purpose",
+      "description": "Modern CSS framework based on Flexbox",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "bulma",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:52.944757",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://bulma.io",
+      "popularity_metrics": {
+        "npm_package": "1.0.3"
+      }
+    },
+    "foundation": {
+      "name": "Foundation",
+      "category": "General Purpose",
+      "description": "The most advanced responsive front-end framework in the world",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "foundation",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:53.016165",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "4.2.1-1"
+      }
+    },
+    "uikit": {
+      "name": "UIkit",
+      "category": "General Purpose",
+      "description": "Lightweight and modular front-end framework for developing fast and powerful web interfaces",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "uikit",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:53.084259",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://getuikit.com",
+      "popularity_metrics": {
+        "npm_package": "3.21.16"
+      }
+    },
+    "primer": {
+      "name": "Primer",
+      "category": "General Purpose",
+      "description": "CSS framework that powers GitHub's front-end design",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "primer",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:53.758145",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "http://primer.github.io/",
+      "popularity_metrics": {
+        "npm_package": "11.0.0"
+      }
+    },
+    "pico": {
+      "name": "Pico.css",
+      "category": "General Purpose",
+      "description": "Elegant styles for all native HTML elements, dark mode automatically enabled",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "pico",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:53.907610",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.1.17"
+      }
+    },
+    "carboncomponents": {
+      "name": "Carbon Components",
+      "category": "General Purpose",
+      "description": "Component library behind IBM's Carbon Design System",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:53.977708",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "uswebdesign": {
+      "name": "U.S. Web Design System",
+      "category": "General Purpose",
+      "description": "Components used by U",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:54.520657",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "fomantic": {
+      "name": "Fomantic-UI",
+      "category": "General Purpose",
+      "description": "Build beautiful websites fast, with concise HTML, intuitive javascript, and simplified debugging",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.116444",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "blaze": {
+      "name": "Blaze UI",
+      "category": "General Purpose",
+      "description": "Open source modular toolkit providing great structure for building websites quickly with a scalable and maintainable foundation",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "blaze",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.189470",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://www.blazeui.com",
+      "popularity_metrics": {
+        "npm_package": "5.0.0-old"
+      }
+    },
+    "cirrus": {
+      "name": "Cirrus",
+      "category": "General Purpose",
+      "description": "Component and utility centric SCSS framework designed for rapid prototyping",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "cirrus",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.255819",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/SomeoneWeird/cirrus#readme",
+      "popularity_metrics": {
+        "npm_package": "0.6.0"
+      }
+    },
+    "vanilla": {
+      "name": "Vanilla Framework",
+      "category": "General Purpose",
+      "description": "Simple, extensible CSS framework",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "vanilla",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.326769",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.5"
+      }
+    },
+    "patternfly": {
+      "name": "PatternFly",
+      "category": "General Purpose",
+      "description": "UI framework for enterprise web applications",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "patternfly",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.395316",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/patternfly/patternfly-3",
+      "popularity_metrics": {
+        "npm_package": "3.59.5"
+      }
+    },
+    "stacks": {
+      "name": "Stacks",
+      "category": "General Purpose",
+      "description": "UI components used by Stack Overflow",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "stacks",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.487929",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/stacksjs/stacks/tree/main/stacks#readme",
+      "popularity_metrics": {
+        "npm_package": "0.68.2"
+      }
+    },
+    "hiq": {
+      "name": "HiQ",
+      "category": "General Purpose",
+      "description": "Simple CSS foundation with responsive typography and input styling",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "hiq",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.582323",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/jonathanharrell/hiq#readme",
+      "popularity_metrics": {
+        "npm_package": "4.2.11"
+      }
+    },
+    "materialcomponentsweb": {
+      "name": "Material Components Web",
+      "category": "Material Design",
+      "description": "Modular and customizable Material Design UI components for the web",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:55.676068",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "beer": {
+      "name": "Beer CSS",
+      "category": "Material Design",
+      "description": "Build material design interfaces in record time without stress for devs",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "beer",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:56.214390",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.8"
+      }
+    },
+    "materialize": {
+      "name": "Materialize",
+      "category": "Material Design",
+      "description": "Responsive front-end library based on Google's Material Design",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "materialize",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:56.282657",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/fgnass/materialize",
+      "popularity_metrics": {
+        "npm_package": "1.0.0"
+      }
+    },
+    "tailwind": {
+      "name": "Tailwind CSS",
+      "category": "Utility-based",
+      "description": "Utility-first CSS framework for rapid UI development",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "tailwind",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:56.352192",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/thenativeweb/tailwind#readme",
+      "popularity_metrics": {
+        "npm_package": "4.0.0"
+      }
+    },
+    "openprops": {
+      "name": "Open Props",
+      "category": "Utility-based",
+      "description": "CSS custom properties to help accelerate adaptive and consistent design",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:56.904074",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "nes": {
+      "name": "NES.css",
+      "category": "Specialized",
+      "description": "NES-style CSS Framework",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "nes",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:57.498910",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/hapijs/nes#readme",
+      "popularity_metrics": {
+        "npm_package": "10.0.2"
+      }
+    },
+    "98": {
+      "name": "98.css",
+      "category": "Specialized",
+      "description": "CSS library for building interfaces that look like Windows 98",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "98",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:57.566429",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "1.0.0"
+      }
+    },
+    "tufte": {
+      "name": "Tufte CSS",
+      "category": "Specialized",
+      "description": "Style your webpage like Edward Tufte\u2019s handouts",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "tufte",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:57.640011",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/lepisma/tufte.js#readme",
+      "popularity_metrics": {
+        "npm_package": "0.1.6"
+      }
+    },
+    "gutenberg": {
+      "name": "Gutenberg",
+      "category": "Specialized",
+      "description": "Modern framework to print the web correctly",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/BafS/Gutenberg",
+      "npm_package": "gutenberg",
+      "stars": 4844,
+      "last_updated": "2024-12-25T06:51:08",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "github_stars": 4844,
+        "open_issues": 7,
+        "forks": 142,
+        "npm_package": "0.8.0"
+      }
+    },
+    "system": {
+      "name": "System.css",
+      "category": "Specialized",
+      "description": "Design system for building retro Apple interfaces",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "system",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:57.980634",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/gutentags/system#readme",
+      "popularity_metrics": {
+        "npm_package": "2.0.1"
+      }
+    },
+    "xp": {
+      "name": "XP.css",
+      "category": "Specialized",
+      "description": "CSS library for building interfaces that look like Windows XP",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "xp",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:58.050272",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/qix-/xp#readme",
+      "popularity_metrics": {
+        "npm_package": "1.0.1"
+      }
+    },
+    "tuicss": {
+      "name": "TuiCss",
+      "category": "Specialized",
+      "description": "Library to create MS-DOS interfaces",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/vinibiavatti1/TuiCss",
+      "npm_package": "tuicss",
+      "stars": 1658,
+      "last_updated": "2025-01-01T18:41:39",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/vinibiavatti1/TuiCss#readme",
+      "popularity_metrics": {
+        "github_stars": 1658,
+        "open_issues": 4,
+        "forks": 72,
+        "npm_package": "2.1.2"
+      }
+    },
+    "7": {
+      "name": "7.css",
+      "category": "Specialized",
+      "description": "CSS library for building interfaces that look like Windows 7",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "7",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:58.408721",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.1"
+      }
+    },
+    "bojler": {
+      "name": "Bojler",
+      "category": "Specialized",
+      "description": "Email framework for developing responsive and lightweight email templates",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "bojler",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:58.484517",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/kamilmielnik/bojler#readme",
+      "popularity_metrics": {
+        "npm_package": "2.0.0"
+      }
+    },
+    "semanticui": {
+      "name": "Semantic UI",
+      "category": "Stalled Development",
+      "description": "User interface is the language of the web",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:58.549057",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "tachyons": {
+      "name": "Tachyons",
+      "category": "Stalled Development",
+      "description": "Quickly build and design new UI without writing CSS",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "tachyons",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:59.170855",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/tachyons-css/tachyons#readme",
+      "popularity_metrics": {
+        "npm_package": "4.12.0"
+      }
+    },
+    "bourbon": {
+      "name": "Bourbon",
+      "category": "Stalled Development",
+      "description": "Lightweight Sass tool set",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "bourbon",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:59.246503",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://www.bourbon.io/",
+      "popularity_metrics": {
+        "npm_package": "7.3.0"
+      }
+    },
+    "water": {
+      "name": "Water.css",
+      "category": "Stalled Development",
+      "description": "Just-add-CSS collection of styles to make simple websites just a little nicer",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "water",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:59.310961",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.1"
+      }
+    },
+    "sanitize": {
+      "name": "sanitize.css",
+      "category": "Stalled Development",
+      "description": "The best-practices CSS foundation",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "sanitize",
+      "stars": null,
+      "last_updated": "2025-01-05T00:20:59.386423",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/pocketly/node-sanitize",
+      "popularity_metrics": {
+        "npm_package": "2.1.2"
+      }
+    },
+    "moderncssreset": {
+      "name": "modern-css-reset",
+      "category": "Stalled Development",
+      "description": "Tiny little reset that you can use as the basis of your CSS projects",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/hankchizljaw/modern-css-reset",
+      "npm_package": null,
+      "stars": 2961,
+      "last_updated": "2025-01-04T17:36:10",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "github_stars": 2961,
+        "open_issues": 20,
+        "forks": 446
+      }
+    },
+    "minireset": {
+      "name": "minireset.css",
+      "category": "Stalled Development",
+      "description": "Tiny modern CSS reset",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:00.338379",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "cssremedy": {
+      "name": "CSS Remedy",
+      "category": "Stalled Development",
+      "description": "Start your project with a remedy for the technical debt of CSS",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/jensimmons/cssremedy",
+      "npm_package": "cssremedy",
+      "stars": 2203,
+      "last_updated": "2024-12-24T19:05:02",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/mozdevs/cssremedy/",
+      "popularity_metrics": {
+        "github_stars": 2203,
+        "open_issues": 36,
+        "forks": 114,
+        "npm_package": "0.1.0-beta.2"
+      }
+    },
+    "inuitcss": {
+      "name": "inuitcss",
+      "category": "Stalled Development",
+      "description": "Extensible, scalable, Sass-based, OOCSS framework for large and long-lasting UI projects",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": "https://github.com/inuitcss/inuitcss",
+      "npm_package": "inuitcss",
+      "stars": 1850,
+      "last_updated": "2024-12-29T08:33:35",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/inuitcss/inuitcss#readme",
+      "popularity_metrics": {
+        "github_stars": 1850,
+        "open_issues": 16,
+        "forks": 207,
+        "npm_package": "6.0.0"
+      }
+    },
+    "unsemantic": {
+      "name": "unsemantic",
+      "category": "Stalled Development",
+      "description": "Fluid grid for mobile, tablet, and desktop",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "unsemantic",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:01.477386",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/nathansmith/unsemantic#readme",
+      "popularity_metrics": {
+        "npm_package": "1.3.0"
+      }
+    },
+    "propeller": {
+      "name": "Propeller",
+      "category": "Stalled Development",
+      "description": "Front-end responsive framework based on Google's Material Design standards & Bootstrap",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "propeller",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:01.557762",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "http://propellerjs.com",
+      "popularity_metrics": {
+        "npm_package": "0.5.8"
+      }
+    },
+    "concise": {
+      "name": "Concise CSS",
+      "category": "Stalled Development",
+      "description": "Give up the bloat",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "concise",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:01.624639",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/guigrpa/concise#readme",
+      "popularity_metrics": {
+        "npm_package": "0.4.5"
+      }
+    },
+    "responsiveboilerplate": {
+      "name": "Responsive Boilerplate",
+      "category": "Stalled Development",
+      "description": "Powerful, accessible, developer friendly framework for building responsive websites",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:01.684206",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "turretcss": {
+      "name": "turretcss",
+      "category": "Stalled Development",
+      "description": "Responsive front-end framework for accessible and semantic websites",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "turretcss",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:02.229424",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://turretcss.com/",
+      "popularity_metrics": {
+        "npm_package": "5.2.2"
+      }
+    },
+    "centurion": {
+      "name": "Centurion",
+      "category": "Stalled Development",
+      "description": "Web-based framework for rapid prototyping and building larger web projects",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "centurion",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:02.306826",
+      "validation_sources": [
+        "awesome-css-frameworks"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.5"
+      }
+    },
+    "donate": {
+      "name": "Donate",
+      "category": "Wikipedia Listed",
+      "description": "\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "donate",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:02.385492",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.0.0"
+      }
+    },
+    "createaccount": {
+      "name": "Create account",
+      "category": "Wikipedia Listed",
+      "description": "\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:02.452799",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "login": {
+      "name": "Log in",
+      "category": "Wikipedia Listed",
+      "description": "\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "login",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:03.039084",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.8.0"
+      }
+    },
+    "top": {
+      "name": "(Top)",
+      "category": "Wikipedia Listed",
+      "description": "\n\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "top",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:03.109624",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {
+        "npm_package": "0.2.3"
+      }
+    },
+    "1listofnotablecssframeworks": {
+      "name": "1\nList of notable CSS frameworks",
+      "category": "Wikipedia Listed",
+      "description": "\n\n\n\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:03.183569",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "2seealso": {
+      "name": "2\nSee also",
+      "category": "Wikipedia Listed",
+      "description": "\n\n\n\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:03.768324",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "3references": {
+      "name": "3\nReferences",
+      "category": "Wikipedia Listed",
+      "description": "\n\n\n\n",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:04.352787",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "grid": {
+      "name": "grid",
+      "category": "Wikipedia Listed",
+      "description": "especially for responsive web design",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "grid",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:04.939790",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/gridgrid/grid",
+      "popularity_metrics": {
+        "npm_package": "4.10.8"
+      }
+    },
+    "icons": {
+      "name": "icons",
+      "category": "Wikipedia Listed",
+      "description": "set of  in sprites or icon fonts",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "icons",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:05.016525",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/npm/deprecate-holder#readme",
+      "popularity_metrics": {
+        "npm_package": "1.0.0"
+      }
+    },
+    "tooltips": {
+      "name": "tooltips",
+      "category": "Wikipedia Listed",
+      "description": "styling for , buttons, elements of forms",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": "tooltips",
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:05.104316",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": "https://github.com/xurui3762791/tooltips#readme",
+      "popularity_metrics": {
+        "npm_package": "1.1.2"
+      }
+    },
+    "graphicaluserinterfaces": {
+      "name": "graphical user interfaces",
+      "category": "Wikipedia Listed",
+      "description": "parts of  like accordion, tabs, slideshow or modal windows (Lightbox)",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:05.166789",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    },
+    "creativecommonsattributionsharealike40license": {
+      "name": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "category": "Wikipedia Listed",
+      "description": "Text is available under the ;\nadditional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia\u00ae is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.",
+      "tags": [
+        "CSS Frameworks"
+      ],
+      "github_url": null,
+      "npm_package": null,
+      "stars": null,
+      "last_updated": "2025-01-05T00:21:05.758123",
+      "validation_sources": [
+        "wikipedia"
+      ],
+      "discovery_context": null,
+      "is_validated": true,
+      "features": [],
+      "alternatives": [],
+      "documentation_url": null,
+      "popularity_metrics": {}
+    }
+  },
+  "last_updated": "2025-01-05T00:21:06.339814"
+}
