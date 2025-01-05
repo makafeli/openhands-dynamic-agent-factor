@@ -1,57 +1,65 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=45", "wheel", "build"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "openhands-dynamic-agent-factor"
-version = "0.1.4"
-authors = [
-  { name="makafeli", email="info@yasin.nu" },
-]
-keywords = ["openhands", "llm", "agent", "factory", "code-analysis"]
-description = "Dynamic agent factory for OpenHands that generates micro-agents based on technology keywords"
+version = "1.0.1"
+description = "A powerful system for analyzing and generating technology-specific agents"
 readme = "README.md"
-requires-python = ">=3.7"
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
+license = { file = "LICENSE" }
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
 ]
+keywords = ["technology", "analysis", "agent", "framework", "stack"]
 dependencies = [
-    "openhands>=0.17.0",
-    "dataclasses;python_version<'3.7'"
+    "requests>=2.25.0",
+    "beautifulsoup4>=4.9.0",
+    "typing-extensions>=4.0.0",
+    "pydantic>=2.0.0",
+    "PyYAML>=6.0",
+    "mkdocs>=1.4.0",
+    "mkdocs-material>=9.0.0",
 ]
+requires-python = ">=3.8"
 
 [project.optional-dependencies]
-python = ["ast", "pylint>=3.0.0"]
-react = ["esprima>=4.0.0", "eslint>=8.0.0"]
-node = ["acorn>=8.0.0", "eslint>=8.0.0"]
-sql = ["sqlparse>=0.4.0", "sqlalchemy>=2.0.0"]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "black>=23.0.0",
     "isort>=5.0.0",
     "mypy>=1.0.0",
-    "flake8>=6.0.0"
-]
-all = [
-    "ast",
-    "pylint>=3.0.0",
-    "esprima>=4.0.0",
-    "eslint>=8.0.0",
-    "acorn>=8.0.0",
-    "sqlparse>=0.4.0",
-    "sqlalchemy>=2.0.0"
+    "pylint>=2.17.0",
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/makafeli/openhands-dynamic-agent-factor"
-"Bug Tracker" = "https://github.com/makafeli/openhands-dynamic-agent-factor/issues"
+Homepage = "https://github.com/yourusername/openhands-dynamic-agent-factor"
+Documentation = "https://yourusername.github.io/openhands-dynamic-agent-factor"
+Repository = "https://github.com/yourusername/openhands-dynamic-agent-factor.git"
+"Bug Tracker" = "https://github.com/yourusername/openhands-dynamic-agent-factor/issues"
+
+[project.scripts]
+openhands = "openhands_dynamic_agent_factory.cli:main"
+
+[tool.setuptools]
+packages = ["openhands_dynamic_agent_factory"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
