@@ -1,0 +1,70 @@
+site_name: Dynamic Agent
+site_description: A powerful system for analyzing and generating technology-specific agents
+site_author: Your Name
+
+repo_name: makafeli/openhands-dynamic-agent-factor
+repo_url: https://github.com/makafeli/openhands-dynamic-agent-factor
+
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quick-start.md
+  - Usage:
+    - Basic Usage: usage/basic-usage.md
+    - Advanced Features: usage/advanced-features.md
+  - API Reference:
+    - TechStackAnalyzer: api/tech-analyzer.md
+    - TriggerMap: api/trigger-map.md
+    - Utils: api/utils.md
+  - Contributing: contributing.md
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - pymdownx.highlight:
+      use_pygments: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocs-minify-plugin:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+      cache_safe: true
+      js_files:
+        - assets/javascripts/**.js
+      css_files:
+        - assets/stylesheets/**.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/makafeli/openhands-dynamic-agent-factor
+      name: GitHub Repository
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/extra.js

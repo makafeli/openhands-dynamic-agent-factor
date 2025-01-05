@@ -100,7 +100,19 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install mkdocs mkdocs-material
+        pip install \
+          mkdocs \
+          mkdocs-material \
+          mkdocs-minify-plugin \
+          pymdown-extensions \
+          pygments
+
+    - name: Create assets directories
+      run: |
+        mkdir -p docs/assets/stylesheets
+        mkdir -p docs/assets/javascripts
+        touch docs/assets/stylesheets/extra.css
+        touch docs/assets/javascripts/extra.js
 
     - name: Build documentation
       run: mkdocs build
@@ -116,3 +128,4 @@ jobs:
         echo "Package publishing completed successfully"
         echo "NPM package: https://www.npmjs.com/package/dynamic-agent"
         echo "PyPI package: https://pypi.org/project/openhands-dynamic-agent-factor/"
+        echo "Documentation: https://makafeli.github.io/openhands-dynamic-agent-factor/"
