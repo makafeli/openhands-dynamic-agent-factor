@@ -4,15 +4,20 @@
   "description": "A powerful system for analyzing and generating technology-specific agents",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "test": "jest --config jest.config.js",
     "lint": "eslint 'src/**/*.ts'",
     "type-check": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run test && npm run build",
     "prepare": "npm run build",
     "pretest": "npm run build",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist coverage",
     "dev": "tsc -w"
   },
   "repository": {
@@ -37,6 +42,7 @@
     "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
+    "@jest/globals": "^29.6.2",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.5",
     "@typescript-eslint/eslint-plugin": "^6.2.0",
@@ -46,5 +52,8 @@
     "rimraf": "^5.0.1",
     "ts-jest": "^29.1.1",
     "typescript": "^5.1.6"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
