@@ -1,0 +1,77 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.1)'
+        required: true
+      release_notes:
+        description: 'Release notes'
+        required: true
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
+    - name: Update version in package.json
+      run: |
+        npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+    - name: Update version in setup.py
+      run: |
+        sed -i "s/version=\".*\"/version=\"${{ github.event.inputs.version }}\"/" setup.py
+
+    - name: Create Release Branch
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git checkout -b release/v${{ github.event.inputs.version }}
+        git add package.json setup.py
+        git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+        git push origin release/v${{ github.event.inputs.version }}
+
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: 'Release v${{ github.event.inputs.version }}'
+        body: |
+          Release version ${{ github.event.inputs.version }}
+          
+          Release Notes:
+          ${{ github.event.inputs.release_notes }}
+        branch: release/v${{ github.event.inputs.version }}
+        base: main
+        labels: release
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.event.inputs.version }}
+        release_name: Release v${{ github.event.inputs.version }}
+        body: ${{ github.event.inputs.release_notes }}
+        draft: false
+        prerelease: false
+
+    - name: Update Release Status
+      run: |
+        echo "Release v${{ github.event.inputs.version }} created successfully"
+        echo "Release URL: ${{ steps.create_release.outputs.html_url }}"
