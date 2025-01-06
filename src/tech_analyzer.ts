@@ -1,266 +1,220 @@
-import { BaseError, ValidationError, Cache, StateManager, OperationResult } from './utils';
+import { TRIGGER_MAP } from './trigger_map';
+import { processText, normalizeText } from './utils';
 
-export interface TechInfo {
-    name: string;
-    type: string;  // language, framework, library, tool, etc.
-    category: string;  // frontend, backend, database, testing, etc.
-    description: string;
-    tags?: string[];
-    github_url?: string;
-    package_manager?: string;  // npm, pip, gem, etc.
-    package_name?: string;
-    stars?: number;
-    last_updated?: Date;
-    validation_sources?: string[];
-    discovery_context?: string;
-    is_validated?: boolean;
-    features?: string[];
-    alternatives?: string[];
-    documentation_url?: string;
-    popularity_metrics?: Record<string, any>;
-    compatibility?: Record<string, string[]>;
-    version_info?: Record<string, any>;
-    ecosystem?: Record<string, string[]>;
-    use_cases?: string[];
-    learning_resources?: Array<{
-        type: string;
-        title: string;
-        url: string;
-    }>;
+export interface TechStackAnalyzerOptions {
+  tech_types?: string[];
+  categories?: string[];
+  use_cache?: boolean;
+  cache_duration?: number;
 }
 
-interface IdentifiedTechnology {
-    name: string;
-    type: string;
-    category: string;
-    description: string;
-    confidence_score: number;
-    popularity?: Record<string, any>;
-    version_info?: Record<string, any>;
-    ecosystem?: Record<string, string[]>;
-    use_cases?: string[];
+export interface TechStackAnalyzerConfig {
+  tech_types: string[];
+  categories: string[];
+  cache_enabled: boolean;
+  cache_duration: number;
 }
 
-interface AnalysisResult {
-    identified_technologies: IdentifiedTechnology[];
-    tech_types: string[];
-    categories: string[];
-    timestamp: string;
-    context: string;
-    stack_analysis: {
-        completeness: Record<string, boolean>;
-        compatibility: Record<string, any>;
-        suggestions: string[];
-    };
-}
-
-export class TechAnalyzerError extends BaseError {
-    constructor(
-        message: string,
-        error_type: string,
-        details?: Record<string, any>,
-        recovery_hint?: string
-    ) {
-        super(
-            message,
-            error_type,
-            details,
-            recovery_hint || "Check technology configuration and sources"
-        );
-    }
+export interface ProcessTextOptions {
+  context?: string;
+  tech_types?: string[];
+  categories?: string[];
+  use_cache?: boolean;
 }
 
 export class TechStackAnalyzer {
-    private tech_cache: Cache<string, TechInfo>;
-    private results_cache: Cache<string, AnalysisResult>;
-    private state_manager: StateManager<Record<string, any>>;
-    private technologies: Map<string, TechInfo>;
+  private config: TechStackAnalyzerConfig;
+  private cache: Map<string, { result: any; timestamp: number }>;
 
-    constructor(
-        private tech_types: string[] = [
-            "language",
-            "framework",
-            "library",
-            "database",
-            "tool",
-            "service",
-            "platform"
-        ],
-        private categories: string[] = [
-            "frontend",
-            "backend",
-            "database",
-            "testing",
-            "devops",
-            "cloud",
-            "mobile",
-            "desktop"
-        ]
-    ) {
-        this.tech_cache = new Cache<string, TechInfo>(3600);
-        this.results_cache = new Cache<string, AnalysisResult>(3600);
-        this.state_manager = new StateManager<Record<string, any>>("/tmp/tech_analyzer/state.json");
-        this.technologies = new Map();
-        this._initialize_technologies();
-    }
+  constructor(options: TechStackAnalyzerOptions = {}) {
+    this.config = {
+      tech_types: options.tech_types || [
+        'language',
+        'framework',
+        'library',
+        'database',
+        'tool',
+        'service',
+        'platform'
+      ],
+      categories: options.categories || [
+        'frontend',
+        'backend',
+        'database',
+        'testing',
+        'devops',
+        'cloud',
+        'mobile',
+        'desktop'
+      ],
+      cache_enabled: options.use_cache !== false,
+      cache_duration: options.cache_duration || 3600000 // 1 hour
+    };
+    this.cache = new Map();
+  }
 
-    private _initialize_technologies(): void {
-        // Add some default technologies for testing
-        this.technologies.set('python', {
-            name: 'python',
-            type: 'language',
-            category: 'backend',
-            description: 'Python programming language'
-        });
+  async process_text(
+    text: string,
+    context: string = '',
+    tech_types?: string[],
+    categories?: string[],
+    use_cache: boolean = true
+  ) {
+    try {
+      // Input validation
+      if (!text || typeof text !== 'string') {
+        return {
+          success: false,
+          error: {
+            message: 'Invalid input text',
+            error_type: 'ValidationError',
+            recovery_hint: 'Provide a non-empty string as input'
+          }
+        };
+      }
 
-        this.technologies.set('react', {
-            name: 'react',
-            type: 'framework',
-            category: 'frontend',
-            description: 'React.js framework'
-        });
-
-        this.technologies.set('mongodb', {
-            name: 'mongodb',
-            type: 'database',
-            category: 'database',
-            description: 'MongoDB database'
-        });
-
-        this.technologies.set('typescript', {
-            name: 'typescript',
-            type: 'language',
-            category: 'frontend',
-            description: 'TypeScript programming language'
-        });
-    }
-
-    public async process_text(
-        text: string,
-        context: string = "",
-        tech_types?: string[],
-        categories?: string[],
-        use_cache: boolean = true
-    ): Promise<OperationResult<AnalysisResult>> {
-        try {
-            if (text === null || text === undefined) {
-                throw new Error("Input text cannot be null or undefined");
-            }
-
-            // Check cache
-            const cache_key = `${text}:${context}:${tech_types}:${categories}`;
-            if (use_cache) {
-                const cached = this.results_cache.get(cache_key);
-                if (cached) {
-                    return {
-                        success: true,
-                        data: cached,
-                        metadata: { cache_hit: true }
-                    };
-                }
-            }
-
-            // Initialize results
-            const results: AnalysisResult = {
-                identified_technologies: [],
-                tech_types: tech_types || this.tech_types,
-                categories: categories || this.categories,
-                timestamp: new Date().toISOString(),
-                context: context,
-                stack_analysis: {
-                    completeness: {},
-                    compatibility: {},
-                    suggestions: []
-                }
-            };
-
-            // Process text
-            if (text.trim()) {
-                // Split text into words and clean them
-                const words = text.split(/[\s,.-]+/)
-                    .map(word => word.toLowerCase().trim())
-                    .filter(word => word.length > 0);
-
-                // Process each word
-                const seen_techs = new Set<string>();
-                for (const word of words) {
-                    const normalized = this._normalize_tech_name(word);
-                    const tech = this.technologies.get(normalized);
-
-                    if (tech) {
-                        // Apply filters
-                        if (tech_types && !tech_types.includes(tech.type)) continue;
-                        if (categories && !categories.includes(tech.category)) continue;
-
-                        if (!seen_techs.has(normalized)) {
-                            seen_techs.add(normalized);
-                            results.identified_technologies.push({
-                                name: tech.name,
-                                type: tech.type,
-                                category: tech.category,
-                                description: tech.description,
-                                confidence_score: this._calculate_confidence(word, tech.name),
-                                popularity: tech.popularity_metrics,
-                                version_info: tech.version_info,
-                                ecosystem: tech.ecosystem,
-                                use_cases: tech.use_cases
-                            });
-                        }
-                    }
-                }
-            }
-
-            // Cache results
-            if (use_cache) {
-                this.results_cache.set(cache_key, results);
-            }
-
-            return {
-                success: true,
-                data: results,
-                metadata: {
-                    cache_hit: false,
-                    tech_count: results.identified_technologies.length
-                }
-            };
-
-        } catch (error) {
-            return {
-                success: false,
-                error: new TechAnalyzerError(
-                    `Analysis failed: ${String(error)}`,
-                    "AnalysisError",
-                    { text: text?.slice(0, 100), error: String(error) }
-                )
-            };
+      // Cache check
+      const cacheKey = `${text}:${context}:${tech_types}:${categories}`;
+      if (use_cache && this.config.cache_enabled) {
+        const cached = this.cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < this.config.cache_duration) {
+          return {
+            ...cached.result,
+            metadata: { ...cached.result.metadata, cache_hit: true }
+          };
         }
+      }
+
+      // Process text
+      const normalizedText = normalizeText(text);
+      const processedText = await processText(normalizedText);
+
+      // Analyze technologies
+      const identified_technologies = this.identifyTechnologies(
+        processedText,
+        tech_types || this.config.tech_types,
+        categories || this.config.categories
+      );
+
+      // Analyze stack
+      const stack_analysis = this.analyzeStack(identified_technologies);
+
+      const result = {
+        success: true,
+        data: {
+          identified_technologies,
+          tech_types: tech_types || this.config.tech_types,
+          categories: categories || this.config.categories,
+          timestamp: new Date().toISOString(),
+          context,
+          stack_analysis
+        },
+        metadata: {
+          cache_hit: false,
+          processing_time: Date.now()
+        }
+      };
+
+      // Cache result
+      if (use_cache && this.config.cache_enabled) {
+        this.cache.set(cacheKey, {
+          result,
+          timestamp: Date.now()
+        });
+      }
+
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          message: error instanceof Error ? error.message : 'Unknown error occurred',
+          error_type: 'ProcessingError',
+          details: error instanceof Error ? { stack: error.stack } : undefined,
+          recovery_hint: 'Try with different input or check the error details'
+        }
+      };
+    }
+  }
+
+  private identifyTechnologies(
+    text: string,
+    tech_types: string[],
+    categories: string[]
+  ) {
+    const technologies = [];
+    const matches = text.match(TRIGGER_MAP.pattern) || [];
+
+    for (const match of matches) {
+      const tech = TRIGGER_MAP.getTechnology(match.toLowerCase());
+      if (
+        tech &&
+        tech_types.includes(tech.type) &&
+        categories.includes(tech.category)
+      ) {
+        technologies.push({
+          ...tech,
+          matches: [match],
+          confidence_score: this.calculateConfidenceScore(match, text)
+        });
+      }
     }
 
-    private _normalize_tech_name(name: string): string {
-        return name.toLowerCase()
-            .replace(/[^a-z0-9]+/g, '')
-            .trim();
+    return technologies;
+  }
+
+  private calculateConfidenceScore(match: string, text: string): number {
+    // Simple confidence score calculation
+    const frequency = (text.match(new RegExp(match, 'gi')) || []).length;
+    const contextScore = frequency > 1 ? 0.2 : 0;
+    const baseScore = 0.7;
+    return Math.min(baseScore + contextScore, 1);
+  }
+
+  private analyzeStack(technologies: any[]) {
+    return {
+      completeness: this.checkStackCompleteness(technologies),
+      compatibility: this.checkCompatibility(technologies),
+      suggestions: this.generateSuggestions(technologies)
+    };
+  }
+
+  private checkStackCompleteness(technologies: any[]) {
+    const completeness: Record<string, boolean> = {
+      frontend: false,
+      backend: false,
+      database: false
+    };
+
+    for (const tech of technologies) {
+      if (tech.category in completeness) {
+        completeness[tech.category] = true;
+      }
     }
 
-    private _calculate_confidence(original: string, tech_name: string): number {
-        let score = 0.7;  // Base score
+    return completeness;
+  }
 
-        // Exact match bonus (case-insensitive)
-        if (original.toLowerCase() === tech_name.toLowerCase()) {
-            score += 0.3;
-        }
-        // Partial match bonus
-        else if (tech_name.toLowerCase().includes(original.toLowerCase()) ||
-                original.toLowerCase().includes(tech_name.toLowerCase())) {
-            score += 0.1;
-        }
+  private checkCompatibility(technologies: any[]) {
+    // Simplified compatibility check
+    return {
+      compatible: true,
+      issues: []
+    };
+  }
 
-        // Known technology bonus
-        const normalized = this._normalize_tech_name(original);
-        if (this.technologies.has(normalized)) {
-            score += 0.2;
-        }
+  private generateSuggestions(technologies: any[]) {
+    const suggestions: string[] = [];
+    const categories = new Set(technologies.map(t => t.category));
 
-        return Math.min(score, 1.0);
+    if (!categories.has('testing')) {
+      suggestions.push('Consider adding testing frameworks to your stack');
     }
+
+    if (!categories.has('devops')) {
+      suggestions.push('Consider adding DevOps tools for better deployment workflow');
+    }
+
+    return suggestions;
+  }
 }

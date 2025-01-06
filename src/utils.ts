@@ -1,128 +1,141 @@
-export interface OperationResult<T> {
-    success: boolean;
-    data?: T;
-    error?: BaseError;
-    metadata?: Record<string, any>;
-    duration?: number;
+ import axios from 'axios';
+
+export async function processText(text: string): Promise<string> {
+  // Remove common punctuation and normalize whitespace
+  const normalized = text
+    .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Convert to lowercase for case-insensitive matching
+  return normalized.toLowerCase();
 }
 
-export class BaseError extends Error {
-    constructor(
-        message: string,
-        public error_type: string,
-        public details?: Record<string, any>,
-        public recovery_hint?: string
-    ) {
-        super(message);
-        this.name = this.constructor.name;
-    }
-
-    public to_dict(): Record<string, any> {
-        return {
-            message: this.message,
-            error_type: this.error_type,
-            details: this.details,
-            recovery_hint: this.recovery_hint
-        };
-    }
+export function normalizeText(text: string): string {
+  return text
+    .replace(/[\n\r\t]/g, ' ') // Replace newlines, tabs with spaces
+    .replace(/\s+/g, ' ')      // Normalize multiple spaces
+    .trim();                   // Remove leading/trailing whitespace
 }
 
-export class ValidationError extends BaseError {
-    constructor(
-        message: string,
-        details?: Record<string, any>,
-        recovery_hint?: string
-    ) {
-        super(message, 'ValidationError', details, recovery_hint);
-    }
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit & { timeout?: number } = {}
+): Promise<Response> {
+  const { timeout = 5000, ...fetchOptions } = options;
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...fetchOptions,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
 }
 
-export class Cache<K, V> {
-    private cache: Map<K, { value: V; expires: number }>;
-    private ttl: number;
+export function debounce<F extends (...args: any[]) => any>(
+  func: F,
+  waitFor: number
+): (...args: Parameters<F>) => Promise<ReturnType<F>> {
+  let timeout: NodeJS.Timeout;
 
-    constructor(ttl: number = 3600) {
-        this.cache = new Map();
-        this.ttl = ttl * 1000; // Convert to milliseconds
+  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
+    new Promise(resolve => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+
+      timeout = setTimeout(() => resolve(func(...args)), waitFor);
+    });
+}
+
+export function memoize<T extends (...args: any[]) => any>(
+  func: T,
+  options: { maxSize?: number; ttl?: number } = {}
+): T {
+  const { maxSize = 100, ttl = 3600000 } = options; // Default: 100 items, 1 hour TTL
+  const cache = new Map<string, { value: any; timestamp: number }>();
+
+  return ((...args: Parameters<T>): ReturnType<T> => {
+    const key = JSON.stringify(args);
+    const cached = cache.get(key);
+
+    if (cached && Date.now() - cached.timestamp < ttl) {
+      return cached.value;
     }
 
-    set(key: K, value: V): void {
-        this.cache.set(key, {
-            value,
-            expires: Date.now() + this.ttl
-        });
+    const result = func(...args);
+    cache.set(key, { value: result, timestamp: Date.now() });
+
+    if (cache.size > maxSize) {
+      const oldestKey = Array.from(cache.entries())
+        .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
+      cache.delete(oldestKey);
     }
 
-    get(key: K): V | undefined {
-        const item = this.cache.get(key);
-        if (!item) return undefined;
+    return result;
+  }) as T;
+}
 
-        if (Date.now() > item.expires) {
-            this.cache.delete(key);
-            return undefined;
+export function retry<T>(
+  fn: () => Promise<T>,
+  options: {
+    maxAttempts?: number;
+    delay?: number;
+    backoff?: number;
+    shouldRetry?: (error: any) => boolean;
+  } = {}
+): Promise<T> {
+  const {
+    maxAttempts = 3,
+    delay = 1000,
+    backoff = 2,
+    shouldRetry = () => true
+  } = options;
+
+  return new Promise<T>((resolve, reject) => {
+    let attempts = 0;
+
+    const attempt = async () => {
+      try {
+        const result = await fn();
+        resolve(result);
+      } catch (error) {
+        attempts++;
+
+        if (attempts < maxAttempts && shouldRetry(error)) {
+          const nextDelay = delay * Math.pow(backoff, attempts - 1);
+          setTimeout(attempt, nextDelay);
+        } else {
+          reject(error);
         }
+      }
+    };
 
-        return item.value;
-    }
-
-    clear(): void {
-        this.cache.clear();
-    }
+    attempt();
+  });
 }
 
-export class StateManager<T> {
-    constructor(private filePath: string) {}
+export function safeJsonParse(str: string, fallback: any = null): any {
+  try {
+    return JSON.parse(str);
+  } catch {
+    return fallback;
+  }
+}
 
-    async load_state(): Promise<OperationResult<T>> {
-        try {
-            const response = await fetch(this.filePath);
-            if (!response.ok) {
-                throw new Error(`Failed to load state: ${response.statusText}`);
-            }
-            const data = await response.json();
-            return {
-                success: true,
-                data: data as T
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: new BaseError(
-                    'Failed to load state',
-                    'StateLoadError',
-                    { error: String(error) }
-                )
-            };
-        }
-    }
-
-    async save_state(state: T): Promise<OperationResult<boolean>> {
-        try {
-            const response = await fetch(this.filePath, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(state)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to save state: ${response.statusText}`);
-            }
-
-            return {
-                success: true,
-                data: true
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: new BaseError(
-                    'Failed to save state',
-                    'StateSaveError',
-                    { error: String(error) }
-                )
-            };
-        }
-    }
+export function isValidUrl(str: string): boolean {
+  try {
+    new URL(str);
+    return true;
+  } catch {
+    return false;
+  }
 }
