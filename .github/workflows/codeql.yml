@@ -32,6 +32,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
     - name: Setup Node.js
       if: matrix.language == 'javascript'
@@ -65,8 +67,16 @@ jobs:
       with:
         languages: ${{ matrix.language }}
         queries: security-and-quality
+        config-file: ./.github/codeql/codeql-config.yml
+
+    - name: Build with CodeQL
+      uses: github/codeql-action/autobuild@v2
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{ matrix.language }}"
+        upload: true
+        upload-database: true
+        ram: 4096
+        threads: 4

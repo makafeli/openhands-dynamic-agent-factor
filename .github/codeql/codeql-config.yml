@@ -1,0 +1,40 @@
+name: "Dynamic Agent CodeQL Config"
+
+disable-default-queries: false
+
+queries:
+  - name: Security and Quality
+    uses: security-and-quality
+
+paths:
+  - src
+  - openhands_dynamic_agent_factory
+
+paths-ignore:
+  - '**/node_modules'
+  - '**/dist'
+  - '**/build'
+  - '**/coverage'
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+  - '**/__tests__'
+  - '**/test'
+  - '**/tests'
+
+query-filters:
+  - exclude:
+      problem.severity:
+        - note
+        - recommendation
+
+extraction:
+  javascript:
+    index-typescript: true
+    typescript-features: true
+    experimental:
+      optimize-trap-cache: true
+  python:
+    python-version: "3.10"
+    index-requirements-files: true
+    experimental:
+      optimize-trap-cache: true
