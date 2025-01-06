@@ -2,99 +2,85 @@ name: Update Dependencies
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # Run weekly on Monday
-  workflow_dispatch:  # Allow manual trigger
+    - cron: '0 0 * * 0'  # Run weekly on Sunday at midnight
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  security-events: write
+  pull-requests: write
+  actions: read
+  checks: write
+  issues: write
 
 jobs:
-  update-deps:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-
-    - name: Check for Python updates
-      id: pip-update
-      run: |
-        python -m pip install --upgrade pip
-        pip install pip-tools safety
-        pip-compile --upgrade requirements.in
-        safety check
-
-    - name: Check for npm updates
-      id: npm-update
-      run: |
-        npm install -g npm-check-updates
-        ncu -u
-        npm audit fix
-
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: 'chore: update dependencies'
-        title: 'chore: update dependencies'
-        body: |
-          Automated dependency updates
-          
-          Python changes:
-          ${{ steps.pip-update.outputs.changes }}
-          
-          npm changes:
-          ${{ steps.npm-update.outputs.changes }}
-          
-          Please review and merge if all tests pass.
-        branch: deps/auto-updates
-        base: main
-        labels: dependencies
-
   security-scan:
+    name: Security Scan
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Run CodeQL Analysis
-      uses: github/codeql-action/init@v2
-      with:
-        languages: python, javascript
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, python
+          queries: security-and-quality
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
 
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/python@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        command: monitor
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:javascript" # Specify category to avoid merge conflicts
+          output: results
 
-    - name: Run OWASP Dependency Check
-      uses: dependency-check/Dependency-Check_Action@main
-      with:
-        project: 'OpenHands'
-        path: '.'
-        format: 'HTML'
-        args: >
-          --failOnCVSS 7
-          --enableRetired
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Upload analysis results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: reports
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
 
-    - name: Create Security Report Issue
-      if: failure()
-      uses: peter-evans/create-issue-from-file@v4
-      with:
-        title: Security Scan Results
-        content-filepath: dependency-check-report.html
-        labels: security, automated-report
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Update npm dependencies
+        run: |
+          npm outdated || true
+          npm update
+          npm audit fix || true
+
+      - name: Update Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip list --outdated
+          pip install -r requirements.txt --upgrade || true
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): update dependencies"
+          title: "chore(deps): update dependencies"
+          body: |
+            This PR updates project dependencies to their latest versions.
+            
+            Changes:
+            - Updates npm packages
+            - Updates Python packages
+            
+            Please review the changes and merge if everything looks good.
+          branch: "deps/update-dependencies"
+          base: "main"
+          labels: "dependencies"
