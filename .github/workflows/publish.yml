@@ -25,8 +25,14 @@ jobs:
         node-version: '18.x'
         registry-url: 'https://registry.npmjs.org'
 
+    - name: Install global dependencies
+      run: npm install -g typescript jest
+
     - name: Install dependencies
-      run: npm ci
+      run: |
+        npm cache clean --force
+        rm -rf node_modules package-lock.json
+        npm install
 
     - name: Run tests
       run: npm test
@@ -50,7 +56,10 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
 
     - name: Install dependencies
-      run: npm ci
+      run: |
+        npm cache clean --force
+        rm -rf node_modules package-lock.json
+        npm install
 
     - name: Build package
       run: npm run build
