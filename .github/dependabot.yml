@@ -15,6 +15,12 @@ updates:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "production"
 
   # Enable version updates for Python
   - package-ecosystem: "pip"
@@ -30,6 +36,12 @@ updates:
       prefix: "chore"
       prefix-development: "chore"
       include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "production"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -44,16 +56,6 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
-
-# Security updates configuration
-security:
-  alerts:
-    enabled: true
-  fixes:
-    enabled: true
-    schedule:
-      interval: "daily"
-  updates:
-    enabled: true
-    schedule:
-      interval: "daily"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-patch"]
