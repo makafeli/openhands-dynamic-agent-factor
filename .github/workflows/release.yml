@@ -46,7 +46,7 @@ jobs:
         git push origin release/v${{ github.event.inputs.version }}
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
+      uses: peter-evans/create-pull-request@v7
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         title: 'Release v${{ github.event.inputs.version }}'
