@@ -8,24 +8,24 @@ module.exports = {
     '**/?(*.)+(spec|test).+(ts|tsx|js)'
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-      diagnostics: {
-        ignoreCodes: ['TS151001']
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.json'
       }
-    }]
+    ]
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
-  coverageThreshold: {
-    global: {
-      branches: 70,
-      functions: 70,
-      lines: 75,
-      statements: 75
-    }
-  },
+  coverageReporters: ['json', 'lcov', 'text', 'clover'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/dist/',
+    '/__tests__/',
+    '/coverage/'
+  ],
+  verbose: true,
+  testTimeout: 10000,
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts']
 };

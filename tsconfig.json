@@ -2,22 +2,29 @@
   "compilerOptions": {
     "target": "es2019",
     "module": "commonjs",
+    "lib": ["es2019", "dom"],
     "declaration": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "rootDir": "./src",
+    "sourceMap": true,
     "baseUrl": ".",
-    "lib": ["es2019", "dom"],
-    "types": ["node", "jest", "@jest/globals"],
     "paths": {
       "*": ["node_modules/*"]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }
