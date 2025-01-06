@@ -82,8 +82,8 @@ jobs:
         ram: 4096
         threads: 4
 
-  secret-scanning:
-    name: Secret Scanning
+  security-scan:
+    name: Security Scan
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -96,14 +96,14 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Run Secret Scanning
-      uses: github/secret-scanning-action@v1
+    - name: Run Dependency Review
+      uses: actions/dependency-review-action@v3
       with:
-        scan-historic: true
-        scan-push-protection: true
+        fail-on-severity: high
+        deny-licenses: LGPL-2.0, GPL-2.0
 
-    - name: Upload Secret Scanning Results
-      uses: github/codeql-action/upload-sarif@v2
+    - name: Run Dependency Submission
+      uses: github/dependency-submission-action@v1
       with:
-        sarif_file: results/secret-scanning.sarif
-        category: "/secret-scanning"
+        directory: /
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
