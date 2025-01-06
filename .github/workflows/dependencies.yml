@@ -17,6 +17,10 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript', 'python']
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,7 +28,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: javascript, python
+          languages: ${{ matrix.language }}
           queries: security-and-quality
 
       - name: Autobuild
@@ -33,8 +37,7 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
-          category: "/language:javascript" # Specify category to avoid merge conflicts
-          output: results
+          category: "/language:${{ matrix.language }}"
 
   update-dependencies:
     name: Update Dependencies
@@ -55,6 +58,12 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Install dependencies
+        run: |
+          npm ci
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
       - name: Update npm dependencies
         run: |
           npm outdated || true
@@ -63,9 +72,10 @@ jobs:
 
       - name: Update Python dependencies
         run: |
-          python -m pip install --upgrade pip
           pip list --outdated
-          pip install -r requirements.txt --upgrade || true
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt --upgrade || true
+          fi
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
