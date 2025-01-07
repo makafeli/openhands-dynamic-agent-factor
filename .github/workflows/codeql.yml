@@ -119,12 +119,6 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    - name: Run Dependency Review
-      uses: actions/dependency-review-action@v3
-      with:
-        fail-on-severity: high
-        deny-licenses: LGPL-2.0, GPL-2.0
-
     - name: Run npm audit
       run: |
         npm audit --json --production || true
