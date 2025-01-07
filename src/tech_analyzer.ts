@@ -203,7 +203,7 @@ export class TechStackAnalyzer {
     return completeness;
   }
 
-  private checkCompatibility(techs: Technology[]) {
+  private checkCompatibility(_: Technology[]) {
     // Simplified compatibility check
     return {
       compatible: true,
