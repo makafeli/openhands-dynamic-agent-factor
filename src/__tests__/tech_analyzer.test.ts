@@ -93,12 +93,12 @@ describe('TechStackAnalyzer', () => {
 
     describe('stack analysis', () => {
         it('should check stack completeness', async () => {
-            const result = await analyzer.process_text('react node.js mongodb');
+            const result = await analyzer.process_text('react javascript mongodb');
             expect(result.success).toBe(true);
             if (result.success) {
                 const completeness = result.data.stack_analysis.completeness;
                 expect(completeness.frontend).toBe(true);
-                expect(completeness.backend).toBe(true);
+                expect(completeness.backend).toBe(false); // No backend framework or language
                 expect(completeness.database).toBe(true);
             }
         });

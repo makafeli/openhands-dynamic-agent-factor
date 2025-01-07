@@ -194,9 +194,21 @@ export class TechStackAnalyzer {
       database: false
     };
 
+    // First, check for frameworks and tools
     for (const tech of techs) {
       if (tech.category in completeness) {
-        completeness[tech.category] = true;
+        if (tech.type === 'framework' || tech.type === 'database') {
+          completeness[tech.category] = true;
+        }
+      }
+    }
+
+    // Then, check for languages if no framework was found
+    for (const tech of techs) {
+      if (tech.category in completeness && !completeness[tech.category]) {
+        if (tech.type === 'language') {
+          completeness[tech.category] = true;
+        }
       }
     }
 
