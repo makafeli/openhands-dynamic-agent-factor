@@ -106,8 +106,11 @@ jobs:
         fail-on-severity: high
         deny-licenses: LGPL-2.0, GPL-2.0
 
-    - name: Run Dependency Submission
-      uses: github/dependency-submission-action@v1
-      with:
-        directory: /
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run npm audit
+      run: |
+        npm audit --json || true
+
+    - name: Run pip audit
+      run: |
+        pip install pip-audit
+        pip-audit || true
