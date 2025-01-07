@@ -17,22 +17,20 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v3
       with:
         node-version: '18.x'
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Install global dependencies
-      run: npm install -g typescript jest
-
     - name: Install dependencies
       run: |
-        npm cache clean --force
-        rm -rf node_modules package-lock.json
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
         npm install
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Run tests
       run: npm test
@@ -47,27 +45,28 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v3
       with:
         node-version: '18.x'
         registry-url: 'https://registry.npmjs.org'
 
     - name: Install dependencies
       run: |
-        npm cache clean --force
-        rm -rf node_modules package-lock.json
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
         npm install
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Build package
       run: npm run build
 
     - name: Publish to NPM
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: npm publish --access public
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-pypi:
     needs: build
@@ -76,10 +75,10 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
@@ -104,10 +103,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.10'
 
@@ -132,16 +131,16 @@ jobs:
       run: mkdocs build
 
     - name: Setup Pages
-      uses: actions/configure-pages@v5
+      uses: actions/configure-pages@v3
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v2
       with:
         path: './site'
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v4
+      uses: actions/deploy-pages@v2
 
     - name: Notify completion
       run: |
