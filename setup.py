@@ -34,6 +34,11 @@ setup(
         "PyYAML>=6.0",
         "mkdocs>=1.4.0",
         "mkdocs-material>=9.0.0",
+        "types-requests>=2.25.0",
+        "types-beautifulsoup4>=4.9.0",
+        "types-PyYAML>=6.0",
+        "dataclasses-json>=0.5.7",
+        "webbrowser>=0.10.1",
     ],
     extras_require={
         "dev": [

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Command-line interface for the CSS Framework Analyzer.
-Provides interactive analysis and visualization of CSS framework detection.
+Command-line interface for the Technology Stack Analyzer.
+Provides interactive analysis and visualization of technology stack detection.
 """
 
 import argparse
@@ -13,35 +13,33 @@ from typing import Optional, List, Dict, Any
 import webbrowser
 from datetime import datetime
 
-from .css_framework_analyzer import CSSFrameworkAnalyzer
-from .templates import AnalysisTemplate, load_template, save_template
+from .tech_analyzer import TechStackAnalyzer
+from .templates import TemplateManager, AnalysisTemplate
 
-class FrameworkAnalyzerCLI:
-    """Interactive CLI for CSS Framework Analysis."""
+class TechAnalyzerCLI:
+    """Interactive CLI for Technology Stack Analysis."""
 
-    def __init__(self):
-        self.analyzer = CSSFrameworkAnalyzer(
+    def __init__(self) -> None:
+        self.analyzer = TechStackAnalyzer(
             cache_enabled=True,
             max_cache_size=1000,
             log_level=logging.INFO
         )
         self.current_results: Dict[str, Any] = {}
         self.templates_dir = Path(__file__).parent / "templates"
-        self.templates_dir.mkdir(exist_ok=True)
+        self.template_manager = TemplateManager(self.templates_dir)
 
     def analyze_text(self, text: str, template: Optional[str] = None) -> Dict[str, Any]:
         """Analyze text using optional template."""
         if template:
-            template_path = self.templates_dir / f"{template}.json"
-            if template_path.exists():
-                template_config = load_template(template_path)
+            template_obj = self.template_manager.get_template(template)
+            if template_obj:
                 return self.analyzer.process_text(
                     text,
-                    use_cache=template_config.get('use_cache', True),
-                    fallback_enabled=template_config.get('fallback_enabled', True)
-                )
+                    use_cache=template_obj.use_cache
+                ).data
         
-        return self.analyzer.process_text(text)
+        return self.analyzer.process_text(text).data
 
     def save_results(self, results: Dict[str, Any], output: Optional[str] = None) -> None:
         """Save analysis results to file."""
@@ -51,7 +49,7 @@ class FrameworkAnalyzerCLI:
             
             # Add metadata
             results['saved_at'] = datetime.now().isoformat()
-            results['cli_version'] = '1.0.0'
+            results['cli_version'] = '1.0.2'
             
             with open(output_path, 'w') as f:
                 json.dump(results, f, indent=2)
@@ -59,31 +57,25 @@ class FrameworkAnalyzerCLI:
 
     def create_template(self, name: str, config: Dict[str, Any]) -> None:
         """Create new analysis template."""
-        template = AnalysisTemplate(
+        template = self.template_manager.create_template(
             name=name,
             description=config.get('description', ''),
             use_cache=config.get('use_cache', True),
-            fallback_enabled=config.get('fallback_enabled', True),
             confidence_threshold=config.get('confidence_threshold', 0.7),
             custom_patterns=config.get('custom_patterns', [])
         )
-        
-        template_path = self.templates_dir / f"{name}.json"
-        save_template(template, template_path)
-        print(f"\nTemplate saved: {template_path}")
+        print(f"\nTemplate saved: {self.templates_dir / f'{name}.json'}")
 
     def list_templates(self) -> List[str]:
         """List available analysis templates."""
         templates = []
-        for path in self.templates_dir.glob("*.json"):
-            template = load_template(path)
-            templates.append(f"{path.stem}: {template.description}")
+        for template in self.template_manager.list_templates():
+            templates.append(f"{template['name']}: {template['description']}")
         return templates
 
     def launch_dashboard(self, port: int = 8000) -> None:
         """Launch web dashboard for visualization."""
-        # In a real implementation, this would start a web server
-        # For now, we'll just create a static HTML report
+        # Create a static HTML report
         report_path = Path(__file__).parent / "reports" / f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         report_path.parent.mkdir(exist_ok=True)
         
@@ -91,16 +83,16 @@ class FrameworkAnalyzerCLI:
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Framework Analysis Report</title>
+            <title>Technology Stack Analysis Report</title>
             <style>
                 body {{ font-family: Arial, sans-serif; margin: 2em; }}
-                .framework {{ border: 1px solid #ccc; padding: 1em; margin: 1em 0; }}
+                .technology {{ border: 1px solid #ccc; padding: 1em; margin: 1em 0; }}
                 .confidence {{ color: green; }}
-                .method {{ color: blue; }}
+                .category {{ color: blue; }}
             </style>
         </head>
         <body>
-            <h1>Framework Analysis Report</h1>
+            <h1>Technology Stack Analysis Report</h1>
             <p>Generated: {datetime.now().isoformat()}</p>
             
             <h2>Analysis Results</h2>
@@ -108,9 +100,9 @@ class FrameworkAnalyzerCLI:
                 {self._results_to_html()}
             </div>
             
-            <h2>Statistics</h2>
-            <div id="stats">
-                {self._stats_to_html()}
+            <h2>Stack Analysis</h2>
+            <div id="analysis">
+                {self._analysis_to_html()}
             </div>
         </body>
         </html>
@@ -126,53 +118,71 @@ class FrameworkAnalyzerCLI:
             return "<p>No analysis results available.</p>"
             
         html = []
-        for fw in self.current_results.get('identified_frameworks', []):
+        for tech in self.current_results.get('identified_technologies', []):
             html.append(f"""
-            <div class="framework">
-                <h3>{fw['name']} ({fw['category']})</h3>
-                <p class="confidence">Confidence: {fw.get('confidence_score', 'N/A')}</p>
-                <p class="method">Detection Method: {fw.get('detection_method', 'N/A')}</p>
-                <p>Original Text: {fw.get('original_text', 'N/A')}</p>
-                {self._popularity_to_html(fw.get('popularity', {}))}
+            <div class="technology">
+                <h3>{tech['name']} ({tech['type']})</h3>
+                <p class="category">Category: {tech['category']}</p>
+                <p class="confidence">Confidence: {tech.get('confidence_score', 'N/A')}</p>
+                <p>Description: {tech.get('description', 'N/A')}</p>
+                <p>Use Cases: {', '.join(tech.get('use_cases', []))}</p>
             </div>
             """)
         
         return "\n".join(html)
 
-    def _stats_to_html(self) -> str:
-        """Convert analysis statistics to HTML."""
-        stats = {
-            'Analysis Duration': f"{self.current_results.get('analysis_duration', 'N/A')}s",
-            'Cache Hit': str(self.current_results.get('cache_hit', False)),
-            'Fallback Used': str(self.current_results.get('fallback_used', False)),
-            'Requires Agent': str(self.current_results.get('requires_agent', False))
-        }
-        
-        return "\n".join(f"<p><strong>{k}:</strong> {v}</p>" for k, v in stats.items())
-
-    def _popularity_to_html(self, popularity: Dict[str, Any]) -> str:
-        """Convert popularity metrics to HTML."""
-        if not popularity:
-            return ""
+    def _analysis_to_html(self) -> str:
+        """Convert stack analysis to HTML."""
+        analysis = self.current_results.get('stack_analysis', {})
+        if not analysis:
+            return "<p>No stack analysis available.</p>"
             
-        return f"""
-        <div class="popularity">
-            <h4>Popularity Metrics</h4>
-            {' '.join(f'<p><strong>{k}:</strong> {v}</p>' for k, v in popularity.items())}
-        </div>
-        """
+        html = []
+        
+        # Completeness
+        html.append("<h3>Stack Completeness</h3>")
+        completeness = analysis.get('completeness', {})
+        for category, complete in completeness.items():
+            status = "✓" if complete else "✗"
+            color = "green" if complete else "red"
+            html.append(f'<p style="color: {color}">{status} {category.title()}</p>')
+            
+        # Compatibility
+        html.append("<h3>Compatibility</h3>")
+        compatibility = analysis.get('compatibility', {})
+        score = compatibility.get('score', 1.0)
+        html.append(f'<p>Compatibility Score: {score:.2f}</p>')
+        
+        issues = compatibility.get('issues', [])
+        if issues:
+            html.append("<h4>Issues:</h4>")
+            html.append("<ul>")
+            for issue in issues:
+                html.append(f"<li>{issue}</li>")
+            html.append("</ul>")
+            
+        # Suggestions
+        suggestions = analysis.get('suggestions', [])
+        if suggestions:
+            html.append("<h3>Suggestions</h3>")
+            html.append("<ul>")
+            for suggestion in suggestions:
+                html.append(f"<li>{suggestion}</li>")
+            html.append("</ul>")
+        
+        return "\n".join(html)
 
-def main():
+def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="CSS Framework Analyzer CLI",
+        description="Technology Stack Analyzer CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     subparsers = parser.add_subparsers(dest='command', help='Commands')
     
     # Analyze command
-    analyze_parser = subparsers.add_parser('analyze', help='Analyze text for framework references')
+    analyze_parser = subparsers.add_parser('analyze', help='Analyze text for technology references')
     analyze_parser.add_argument('text', help='Text to analyze')
     analyze_parser.add_argument('--template', help='Analysis template to use')
     analyze_parser.add_argument('--output', help='Save results to file')
@@ -188,7 +198,6 @@ def main():
     create_parser.add_argument('name', help='Template name')
     create_parser.add_argument('--description', help='Template description')
     create_parser.add_argument('--no-cache', action='store_true', help='Disable result caching')
-    create_parser.add_argument('--no-fallback', action='store_true', help='Disable fallback detection')
     create_parser.add_argument('--confidence', type=float, help='Confidence threshold (0.0-1.0)')
     create_parser.add_argument('--patterns', nargs='+', help='Additional regex patterns')
     
@@ -198,7 +207,7 @@ def main():
     
     args = parser.parse_args()
     
-    cli = FrameworkAnalyzerCLI()
+    cli = TechAnalyzerCLI()
     
     try:
         if args.command == 'analyze':
@@ -228,7 +237,6 @@ def main():
                 config = {
                     'description': args.description or '',
                     'use_cache': not args.no_cache,
-                    'fallback_enabled': not args.no_fallback,
                     'confidence_threshold': args.confidence or 0.7,
                     'custom_patterns': args.patterns or []
                 }

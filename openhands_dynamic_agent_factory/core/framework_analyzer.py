@@ -6,7 +6,7 @@ various types of frameworks (CSS, UI, Testing, etc.).
 import re
 import json
 import logging
-from typing import Dict, List, Optional, Any, Set
+from typing import Dict, List, Optional, Any, Set, cast
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
@@ -14,10 +14,8 @@ import requests
 from threading import Lock
 from bs4 import BeautifulSoup
 
-from .utils import (
-    BaseError, ValidationError, Cache, StateManager,
-    OperationResult, monitor_performance
-)
+from .utils import BaseError, ValidationError, Cache, StateManager, OperationResult, monitor_performance
+from .framework_sources import fetch_css_frameworks, fetch_ui_frameworks, fetch_testing_frameworks, fetch_github_info, fetch_npm_info
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -206,14 +204,14 @@ class FrameworkAnalyzer:
         """Update framework database from all sources."""
         try:
             # Fetch from all sources based on framework types
-            all_frameworks = []
+            all_frameworks: List[Dict[str, Any]] = []
             
             if "css" in self.framework_types:
-                all_frameworks.extend(self._fetch_css_frameworks())
+                all_frameworks.extend(fetch_css_frameworks())
             if "ui" in self.framework_types:
-                all_frameworks.extend(self._fetch_ui_frameworks())
+                all_frameworks.extend(fetch_ui_frameworks())
             if "testing" in self.framework_types:
-                all_frameworks.extend(self._fetch_testing_frameworks())
+                all_frameworks.extend(fetch_testing_frameworks())
             
             # Process each framework
             for framework_data in all_frameworks:
@@ -234,7 +232,7 @@ class FrameworkAnalyzer:
                     
                     # Fetch additional information
                     if framework.github_url:
-                        github_info = self._fetch_github_info(framework.github_url)
+                        github_info = fetch_github_info(framework.github_url)
                         if github_info:
                             framework.stars = github_info["stars"]
                             framework.last_updated = github_info["last_updated"]
@@ -245,7 +243,7 @@ class FrameworkAnalyzer:
                             })
                     
                     # Try to find npm package
-                    npm_info = self._fetch_npm_info(name)
+                    npm_info = fetch_npm_info(name)
                     if npm_info:
                         framework.npm_package = npm_info["npm_package"]
                         framework.documentation_url = npm_info["homepage"]

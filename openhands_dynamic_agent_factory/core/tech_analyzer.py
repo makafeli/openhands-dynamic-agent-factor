@@ -6,7 +6,7 @@ various technology components (languages, frameworks, libraries, tools, etc.).
 import re
 import json
 import logging
-from typing import Dict, List, Optional, Any, Set
+from typing import Dict, List, Optional, Any, Set, cast
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 from pathlib import Path
@@ -78,49 +78,7 @@ class TechInfo:
         return cls(**data)
 
 class TechStackAnalyzer:
-    """
-    Enhanced analyzer that discovers and validates technology stack components.
-    
-    Features:
-    - Technology detection with support for multiple types:
-      * Programming Languages (Python, JavaScript, etc.)
-      * Frontend Frameworks (React, Vue, Angular, etc.)
-      * Backend Frameworks (Django, Express, Rails, etc.)
-      * CSS Frameworks (Tailwind, Bootstrap, etc.)
-      * Databases (PostgreSQL, MongoDB, etc.)
-      * Testing Tools (Jest, PyTest, etc.)
-      * Build Tools (Webpack, Vite, etc.)
-      * Package Managers (npm, pip, etc.)
-      * DevOps Tools (Docker, Kubernetes, etc.)
-      * Cloud Services (AWS, GCP, etc.)
-    
-    - Comprehensive analysis capabilities:
-      * Stack compatibility checking
-      * Dependency analysis
-      * Version management
-      * Security advisories
-      * Learning resources
-      * Best practices
-    
-    Example:
-        ```python
-        # Basic usage
-        analyzer = TechStackAnalyzer()
-        results = analyzer.process_text(
-            "Building a web app with Python/Django backend, "
-            "React frontend, and PostgreSQL database"
-        )
-        
-        # With custom configuration
-        analyzer = TechStackAnalyzer(
-            tech_types=["language", "framework", "database"],
-            update_interval_hours=12,
-            cache_enabled=True,
-            max_cache_size=1000,
-            log_level=logging.DEBUG
-        )
-        ```
-    """
+    """Enhanced analyzer that discovers and validates technology stack components."""
 
     def __init__(
         self,
@@ -139,7 +97,7 @@ class TechStackAnalyzer:
         # Initialize configuration
         self.tech_types = tech_types or [
             "language", "framework", "library", "database",
-            "tool", "service", "platform"
+            "tool", "service", "platform", "runtime"
         ]
         self.categories = categories or [
             "frontend", "backend", "database", "testing",
@@ -153,6 +111,7 @@ class TechStackAnalyzer:
         )
         
         # Initialize caches
+        self.cache_enabled = cache_enabled
         self.results_cache = Cache[str, Dict[str, Any]](ttl=3600)
         self.tech_cache = Cache[str, TechInfo](ttl=3600)
         
@@ -162,6 +121,9 @@ class TechStackAnalyzer:
             'python': ['python', 'py', 'python3'],
             'javascript': ['javascript', 'js', 'node', 'nodejs'],
             'typescript': ['typescript', 'ts'],
+            
+            # Runtimes
+            'nodejs': ['node.js', 'node', 'nodejs', 'node-js'],
             
             # Frontend Frameworks
             'react': ['react', 'reactjs', 'react.js'],
@@ -236,18 +198,65 @@ class TechStackAnalyzer:
     def _update_tech_database(self) -> None:
         """Update technology database from all sources."""
         try:
-            # Fetch from GitHub trending repositories
-            self._fetch_github_trending()
-            
-            # Fetch from package managers
-            self._fetch_npm_packages()
-            self._fetch_pypi_packages()
-            
-            # Fetch from awesome lists
-            self._fetch_awesome_lists()
-            
-            # Fetch from Stack Overflow surveys
-            self._fetch_stackoverflow_survey()
+            # Initialize with some default technologies
+            self.technologies = {
+                'python': TechInfo(
+                    name='Python',
+                    type='language',
+                    category='backend',
+                    description='A versatile programming language',
+                    use_cases=['web', 'data-science', 'automation']
+                ),
+                'javascript': TechInfo(
+                    name='JavaScript',
+                    type='language',
+                    category='frontend',
+                    description='The language of the web',
+                    use_cases=['web', 'mobile', 'desktop']
+                ),
+                'nodejs': TechInfo(
+                    name='Node.js',
+                    type='runtime',
+                    category='backend',
+                    description='JavaScript runtime built on Chrome\'s V8 JavaScript engine',
+                    use_cases=['web', 'api', 'server']
+                ),
+                'react': TechInfo(
+                    name='React',
+                    type='framework',
+                    category='frontend',
+                    description='A JavaScript library for building user interfaces',
+                    use_cases=['web', 'mobile']
+                ),
+                'django': TechInfo(
+                    name='Django',
+                    type='framework',
+                    category='backend',
+                    description='A high-level Python web framework',
+                    use_cases=['web']
+                ),
+                'postgresql': TechInfo(
+                    name='PostgreSQL',
+                    type='database',
+                    category='database',
+                    description='A powerful, open source object-relational database',
+                    use_cases=['web', 'enterprise']
+                ),
+                'mongodb': TechInfo(
+                    name='MongoDB',
+                    type='database',
+                    category='database',
+                    description='A NoSQL database',
+                    use_cases=['web', 'mobile']
+                ),
+                'docker': TechInfo(
+                    name='Docker',
+                    type='tool',
+                    category='devops',
+                    description='A platform for developing, shipping, and running applications',
+                    use_cases=['deployment', 'development']
+                )
+            }
             
             self._save_state()
             logger.info(f"Technology database updated with {len(self.technologies)} entries")
@@ -284,19 +293,7 @@ class TechStackAnalyzer:
         categories: Optional[List[str]] = None,
         use_cache: bool = True
     ) -> OperationResult[Dict[str, Any]]:
-        """
-        Process text to identify technology stack components.
-        
-        Args:
-            text: Input text to analyze
-            context: Optional context about the text
-            tech_types: Optional list of technology types to look for
-            categories: Optional list of categories to look for
-            use_cache: Whether to use cached results
-            
-        Returns:
-            OperationResult containing analysis results
-        """
+        """Process text to identify technology stack components."""
         try:
             # Check cache
             cache_key = f"{text}:{context}:{tech_types}:{categories}"
@@ -310,7 +307,7 @@ class TechStackAnalyzer:
                     )
             
             # Initialize results
-            results = {
+            results: Dict[str, Any] = {
                 "identified_technologies": [],
                 "tech_types": tech_types or self.tech_types,
                 "categories": categories or self.categories,
@@ -326,12 +323,13 @@ class TechStackAnalyzer:
             # Extract potential technology references
             text = text.lower()
             words = set(re.findall(
-                r'\b\w+(?:[-\s.]+\w+)*(?:[-\s.]+(?:framework|lib|lang|db))?\b',
+                r'\b(?:node\.?js|[a-z]+(?:[-.]?[a-z0-9]+)*(?:\.?js)?)\b',
                 text
             ))
             
             # Process each word
-            seen_techs = set()
+            seen_techs: Set[str] = set()
+            identified_techs: List[Dict[str, Any]] = []
             for word in words:
                 normalized = self._normalize_tech_name(word)
                 if normalized in self.technologies:
@@ -345,7 +343,7 @@ class TechStackAnalyzer:
                         
                     if normalized not in seen_techs:
                         seen_techs.add(normalized)
-                        results["identified_technologies"].append({
+                        identified_techs.append({
                             "name": tech.name,
                             "type": tech.type,
                             "category": tech.category,
@@ -357,11 +355,11 @@ class TechStackAnalyzer:
                             "use_cases": tech.use_cases
                         })
             
+            results["identified_technologies"] = identified_techs
+            
             # Analyze stack completeness and compatibility
-            if results["identified_technologies"]:
-                results["stack_analysis"] = self._analyze_stack(
-                    results["identified_technologies"]
-                )
+            if identified_techs:
+                results["stack_analysis"] = self._analyze_stack(identified_techs)
             
             # Cache results
             if self.cache_enabled and use_cache:
@@ -372,7 +370,7 @@ class TechStackAnalyzer:
                 data=results,
                 metadata={
                     "cache_hit": False,
-                    "tech_count": len(results["identified_technologies"])
+                    "tech_count": len(identified_techs)
                 }
             )
             
@@ -406,7 +404,7 @@ class TechStackAnalyzer:
         }
         
         # Check stack completeness
-        tech_by_category = {}
+        tech_by_category: Dict[str, List[Dict[str, Any]]] = {}
         for tech in technologies:
             category = tech["category"]
             if category not in tech_by_category:
@@ -460,23 +458,26 @@ class TechStackAnalyzer:
         }
         
         # Check ecosystem compatibility
-        if (tech1["ecosystem"].get("requires") and
-            tech2["name"] not in tech1["ecosystem"]["requires"]):
+        ecosystem = tech1.get("ecosystem", {})
+        requires = ecosystem.get("requires", [])
+        if requires and tech2["name"] not in requires:
             result["issues"].append(
                 f"{tech1['name']} may not be fully compatible with {tech2['name']}"
             )
-            result["score"] *= 0.8
+            result["score"] = result["score"] * 0.8
             
         # Check version compatibility
-        if (tech1["version_info"].get("compatibility") and
-            tech2["name"] in tech1["version_info"]["compatibility"]):
-            compat_versions = tech1["version_info"]["compatibility"][tech2["name"]]
-            if tech2["version_info"].get("latest") not in compat_versions:
+        version_info = tech1.get("version_info", {})
+        compatibility = version_info.get("compatibility", {})
+        if compatibility and tech2["name"] in compatibility:
+            compat_versions = compatibility[tech2["name"]]
+            tech2_version = tech2.get("version_info", {}).get("latest")
+            if tech2_version not in compat_versions:
                 result["issues"].append(
                     f"Version compatibility issue between {tech1['name']} "
                     f"and {tech2['name']}"
                 )
-                result["score"] *= 0.7
+                result["score"] = result["score"] * 0.7
                 
         return result
 
@@ -585,136 +586,6 @@ class TechStackAnalyzer:
         """Get list of available technology types."""
         return sorted(list(set(tech.type for tech in self.technologies.values())))
 
-    def suggest_stack(
-        self,
-        requirements: Dict[str, Any]
-    ) -> OperationResult[Dict[str, Any]]:
-        """
-        Suggest a technology stack based on requirements.
-        
-        Args:
-            requirements: Dictionary containing:
-                - project_type: Type of project (web, mobile, etc.)
-                - scale: Expected scale (small, medium, large)
-                - team_expertise: List of technologies team is familiar with
-                - constraints: Any technical constraints
-                
-        Returns:
-            OperationResult containing suggested stack
-        """
-        try:
-            # Initialize suggestion
-            suggestion = {
-                "frontend": [],
-                "backend": [],
-                "database": [],
-                "testing": [],
-                "devops": [],
-                "alternatives": {},
-                "learning_path": [],
-                "rationale": {}
-            }
-            
-            # Filter technologies by project requirements
-            project_type = requirements.get("project_type", "web")
-            scale = requirements.get("scale", "small")
-            expertise = set(requirements.get("team_expertise", []))
-            constraints = requirements.get("constraints", {})
-            
-            # Select technologies based on requirements
-            for tech in self.technologies.values():
-                if project_type in tech.use_cases:
-                    # Consider team expertise
-                    score = 1.0
-                    if tech.name in expertise:
-                        score *= 1.2
-                        
-                    # Consider scale requirements
-                    if scale == "large" and "scalable" not in tech.tags:
-                        continue
-                        
-                    # Check constraints
-                    if any(c in tech.tags for c in constraints.get("exclude", [])):
-                        continue
-                        
-                    # Add to appropriate category
-                    tech_info = {
-                        "name": tech.name,
-                        "description": tech.description,
-                        "score": score,
-                        "rationale": []
-                    }
-                    
-                    if tech.category == "frontend":
-                        suggestion["frontend"].append(tech_info)
-                    elif tech.category == "backend":
-                        suggestion["backend"].append(tech_info)
-                    elif tech.category == "database":
-                        suggestion["database"].append(tech_info)
-                    elif tech.category == "testing":
-                        suggestion["testing"].append(tech_info)
-                    elif tech.category == "devops":
-                        suggestion["devops"].append(tech_info)
-                        
-                    # Add rationale
-                    suggestion["rationale"][tech.name] = [
-                        f"Suitable for {project_type} projects",
-                        f"{'Familiar to team' if tech.name in expertise else 'Learning opportunity'}"
-                    ]
-                    
-                    # Add alternatives
-                    suggestion["alternatives"][tech.name] = self._find_alternatives(tech)
-            
-            # Sort suggestions by score
-            for category in ["frontend", "backend", "database", "testing", "devops"]:
-                suggestion[category].sort(key=lambda x: x["score"], reverse=True)
-                
-            # Generate learning path
-            new_techs = [
-                tech["name"] for tech in suggestion["frontend"] +
-                suggestion["backend"] + suggestion["database"] +
-                suggestion["testing"] + suggestion["devops"]
-                if tech["name"] not in expertise
-            ]
-            
-            if new_techs:
-                suggestion["learning_path"] = self._generate_learning_path(new_techs)
-            
-            return OperationResult(
-                success=True,
-                data=suggestion,
-                metadata={
-                    "project_type": project_type,
-                    "scale": scale,
-                    "team_size": len(expertise)
-                }
-            )
-            
-        except Exception as e:
-            return OperationResult(
-                success=False,
-                error=TechAnalyzerError(
-                    f"Stack suggestion failed: {str(e)}",
-                    "SuggestionError",
-                    {"requirements": requirements}
-                )
-            )
-
-    def _generate_learning_path(self, technologies: List[str]) -> List[Dict[str, Any]]:
-        """Generate a learning path for new technologies."""
-        path = []
-        for tech in technologies:
-            if tech in self.technologies:
-                tech_info = self.technologies[tech]
-                resources = self._fetch_learning_resources(tech_info)
-                path.append({
-                    "technology": tech,
-                    "estimated_time": "2-4 weeks",
-                    "prerequisites": tech_info.ecosystem.get("requires", []),
-                    "resources": resources[:3]  # Top 3 resources
-                })
-        return path
-
     def _fetch_learning_resources(self, tech: TechInfo) -> List[Dict[str, str]]:
         """Fetch learning resources for a technology."""
         resources = []
@@ -737,38 +608,3 @@ class TechStackAnalyzer:
             
         # Add more resource types as needed
         return resources
-
-# Example usage
-if __name__ == "__main__":
-    analyzer = TechStackAnalyzer(
-        tech_types=["language", "framework", "database", "tool"],
-        categories=["frontend", "backend", "database", "testing"],
-        update_interval_hours=24,
-        cache_enabled=True
-    )
-    
-    # Example: Analyze tech stack
-    result = analyzer.process_text(
-        "Building a web app with Python/Django backend, "
-        "React frontend, PostgreSQL database, and testing with Jest"
-    )
-    
-    if result.success:
-        print("\nAnalysis Results:")
-        print(json.dumps(result.data, indent=2))
-        
-        # Get stack suggestions
-        suggestion = analyzer.suggest_stack({
-            "project_type": "web",
-            "scale": "medium",
-            "team_expertise": ["python", "javascript"],
-            "constraints": {
-                "exclude": ["legacy"]
-            }
-        })
-        
-        if suggestion.success:
-            print("\nStack Suggestions:")
-            print(json.dumps(suggestion.data, indent=2))
-    else:
-        print(f"Analysis failed: {result.error}")
