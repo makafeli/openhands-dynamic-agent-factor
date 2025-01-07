@@ -97,7 +97,11 @@ export class TechStackAnalyzer {
       );
 
       // Analyze stack
-      const stack_analysis = this.analyzeStack(identified_technologies);
+      const stack_analysis = {
+        completeness: this.checkStackCompleteness(identified_technologies),
+        compatibility: this.checkCompatibility(identified_technologies),
+        suggestions: this.generateSuggestions(identified_technologies)
+      };
 
       const result = {
         success: true,
@@ -170,22 +174,14 @@ export class TechStackAnalyzer {
     return Math.min(baseScore + contextScore, 1);
   }
 
-  private analyzeStack(techs: any[]) {
-    return {
-      completeness: this.checkStackCompleteness(techs),
-      compatibility: this.checkCompatibility(techs),
-      suggestions: this.generateSuggestions(techs)
-    };
-  }
-
-  private checkStackCompleteness(techs: any[]) {
+  private checkStackCompleteness(technologies: any[]) {
     const completeness: Record<string, boolean> = {
       frontend: false,
       backend: false,
       database: false
     };
 
-    for (const tech of techs) {
+    for (const tech of technologies) {
       if (tech.category in completeness) {
         completeness[tech.category] = true;
       }
@@ -194,7 +190,7 @@ export class TechStackAnalyzer {
     return completeness;
   }
 
-  private checkCompatibility(techs: any[]) {
+  private checkCompatibility(technologies: any[]) {
     // Simplified compatibility check
     return {
       compatible: true,
@@ -202,9 +198,9 @@ export class TechStackAnalyzer {
     };
   }
 
-  private generateSuggestions(techs: any[]) {
+  private generateSuggestions(technologies: any[]) {
     const suggestions: string[] = [];
-    const categories = new Set(techs.map(t => t.category));
+    const categories = new Set(technologies.map(t => t.category));
 
     if (!categories.has('testing')) {
       suggestions.push('Consider adding testing frameworks to your stack');
