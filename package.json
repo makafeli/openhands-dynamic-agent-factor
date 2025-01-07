@@ -6,8 +6,12 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
+    "src",
+    "openhands_dynamic_agent_factory",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "package.json",
+    "tsconfig.json"
   ],
   "scripts": {
     "clean": "rimraf dist coverage",
