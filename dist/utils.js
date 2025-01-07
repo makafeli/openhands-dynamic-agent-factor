@@ -1,102 +1,111 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StateManager = exports.Cache = exports.ValidationError = exports.BaseError = void 0;
-class BaseError extends Error {
-    constructor(message, error_type, details, recovery_hint) {
-        super(message);
-        this.error_type = error_type;
-        this.details = details;
-        this.recovery_hint = recovery_hint;
-        this.name = this.constructor.name;
-    }
-    to_dict() {
-        return {
-            message: this.message,
-            error_type: this.error_type,
-            details: this.details,
-            recovery_hint: this.recovery_hint
-        };
-    }
+exports.processText = processText;
+exports.normalizeText = normalizeText;
+exports.fetchWithTimeout = fetchWithTimeout;
+exports.debounce = debounce;
+exports.memoize = memoize;
+exports.retry = retry;
+exports.safeJsonParse = safeJsonParse;
+exports.isValidUrl = isValidUrl;
+async function processText(text) {
+    // Remove common punctuation and normalize whitespace
+    const normalized = text
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    // Convert to lowercase for case-insensitive matching
+    return normalized.toLowerCase();
 }
-exports.BaseError = BaseError;
-class ValidationError extends BaseError {
-    constructor(message, details, recovery_hint) {
-        super(message, 'ValidationError', details, recovery_hint);
-    }
+function normalizeText(text) {
+    return text
+        .replace(/[\n\r\t]/g, ' ') // Replace newlines, tabs with spaces
+        .replace(/\s+/g, ' ') // Normalize multiple spaces
+        .trim(); // Remove leading/trailing whitespace
 }
-exports.ValidationError = ValidationError;
-class Cache {
-    constructor(ttl = 3600) {
-        this.cache = new Map();
-        this.ttl = ttl * 1000; // Convert to milliseconds
-    }
-    set(key, value) {
-        this.cache.set(key, {
-            value,
-            expires: Date.now() + this.ttl
+async function fetchWithTimeout(url, options = {}) {
+    const { timeout = 5000, ...fetchOptions } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, {
+            ...fetchOptions,
+            signal: controller.signal
         });
+        clearTimeout(id);
+        return response;
     }
-    get(key) {
-        const item = this.cache.get(key);
-        if (!item)
-            return undefined;
-        if (Date.now() > item.expires) {
-            this.cache.delete(key);
-            return undefined;
-        }
-        return item.value;
-    }
-    clear() {
-        this.cache.clear();
+    catch (error) {
+        clearTimeout(id);
+        throw error;
     }
 }
-exports.Cache = Cache;
-class StateManager {
-    constructor(filePath) {
-        this.filePath = filePath;
-    }
-    async load_state() {
-        try {
-            const response = await fetch(this.filePath);
-            if (!response.ok) {
-                throw new Error(`Failed to load state: ${response.statusText}`);
+function debounce(func, waitFor) {
+    let timeout;
+    return (...args) => new Promise(resolve => {
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => resolve(func(...args)), waitFor);
+    });
+}
+function memoize(func, options = {}) {
+    const { maxSize = 100, ttl = 3600000 } = options; // Default: 100 items, 1 hour TTL
+    const cache = new Map();
+    return ((...args) => {
+        const key = JSON.stringify(args);
+        const cached = cache.get(key);
+        if (cached && Date.now() - cached.timestamp < ttl) {
+            return cached.value;
+        }
+        const result = func(...args);
+        cache.set(key, { value: result, timestamp: Date.now() });
+        if (cache.size > maxSize) {
+            const oldestKey = Array.from(cache.entries())
+                .sort(([, a], [, b]) => a.timestamp - b.timestamp)[0][0];
+            cache.delete(oldestKey);
+        }
+        return result;
+    });
+}
+function retry(fn, options = {}) {
+    const { maxAttempts = 3, delay = 1000, backoff = 2, shouldRetry = () => true } = options;
+    return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const attempt = async () => {
+            try {
+                const result = await fn();
+                resolve(result);
             }
-            const data = await response.json();
-            return {
-                success: true,
-                data: data
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                error: new BaseError('Failed to load state', 'StateLoadError', { error: String(error) })
-            };
-        }
-    }
-    async save_state(state) {
-        try {
-            const response = await fetch(this.filePath, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(state)
-            });
-            if (!response.ok) {
-                throw new Error(`Failed to save state: ${response.statusText}`);
+            catch (error) {
+                attempts++;
+                if (attempts < maxAttempts && shouldRetry(error)) {
+                    const nextDelay = delay * Math.pow(backoff, attempts - 1);
+                    setTimeout(attempt, nextDelay);
+                }
+                else {
+                    reject(error);
+                }
             }
-            return {
-                success: true,
-                data: true
-            };
-        }
-        catch (error) {
-            return {
-                success: false,
-                error: new BaseError('Failed to save state', 'StateSaveError', { error: String(error) })
-            };
-        }
+        };
+        attempt();
+    });
+}
+function safeJsonParse(str, fallback = null) {
+    try {
+        return JSON.parse(str);
+    }
+    catch {
+        return fallback;
     }
 }
-exports.StateManager = StateManager;
+function isValidUrl(str) {
+    try {
+        new URL(str);
+        return true;
+    }
+    catch {
+        return false;
+    }
+}
+//# sourceMappingURL=utils.js.map

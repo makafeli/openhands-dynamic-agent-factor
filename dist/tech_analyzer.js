@@ -1,173 +1,164 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TechStackAnalyzer = exports.TechAnalyzerError = void 0;
+exports.TechStackAnalyzer = void 0;
+const trigger_map_1 = require("./trigger_map");
 const utils_1 = require("./utils");
-class TechAnalyzerError extends utils_1.BaseError {
-    constructor(message, error_type, details, recovery_hint) {
-        super(message, error_type, details, recovery_hint || "Check technology configuration and sources");
-    }
-}
-exports.TechAnalyzerError = TechAnalyzerError;
 class TechStackAnalyzer {
-    constructor(tech_types = [
-        "language",
-        "framework",
-        "library",
-        "database",
-        "tool",
-        "service",
-        "platform"
-    ], categories = [
-        "frontend",
-        "backend",
-        "database",
-        "testing",
-        "devops",
-        "cloud",
-        "mobile",
-        "desktop"
-    ]) {
-        this.tech_types = tech_types;
-        this.categories = categories;
-        this.tech_cache = new utils_1.Cache(3600);
-        this.results_cache = new utils_1.Cache(3600);
-        this.state_manager = new utils_1.StateManager("/tmp/tech_analyzer/state.json");
-        this.technologies = new Map();
-        this._initialize_technologies();
+    constructor(options = {}) {
+        this.config = {
+            tech_types: options.tech_types || [
+                'language',
+                'framework',
+                'library',
+                'database',
+                'tool',
+                'service',
+                'platform'
+            ],
+            categories: options.categories || [
+                'frontend',
+                'backend',
+                'database',
+                'testing',
+                'devops',
+                'cloud',
+                'mobile',
+                'desktop'
+            ],
+            cache_enabled: options.use_cache !== false,
+            cache_duration: options.cache_duration || 3600000 // 1 hour
+        };
+        this.cache = new Map();
     }
-    _initialize_technologies() {
-        // Add some default technologies for testing
-        this.technologies.set('python', {
-            name: 'python',
-            type: 'language',
-            category: 'backend',
-            description: 'Python programming language'
-        });
-        this.technologies.set('react', {
-            name: 'react',
-            type: 'framework',
-            category: 'frontend',
-            description: 'React.js framework'
-        });
-        this.technologies.set('mongodb', {
-            name: 'mongodb',
-            type: 'database',
-            category: 'database',
-            description: 'MongoDB database'
-        });
-        this.technologies.set('typescript', {
-            name: 'typescript',
-            type: 'language',
-            category: 'frontend',
-            description: 'TypeScript programming language'
-        });
-    }
-    async process_text(text, context = "", tech_types, categories, use_cache = true) {
+    async process_text(text, context = '', tech_types, categories, use_cache = true) {
         try {
-            if (text === null || text === undefined) {
-                throw new Error("Input text cannot be null or undefined");
+            // Input validation
+            if (!text || typeof text !== 'string') {
+                return {
+                    success: false,
+                    error: {
+                        message: 'Invalid input text',
+                        error_type: 'ValidationError',
+                        recovery_hint: 'Provide a non-empty string as input'
+                    }
+                };
             }
-            // Check cache
-            const cache_key = `${text}:${context}:${tech_types}:${categories}`;
-            if (use_cache) {
-                const cached = this.results_cache.get(cache_key);
-                if (cached) {
+            // Cache check
+            const cacheKey = `${text}:${context}:${tech_types}:${categories}`;
+            if (use_cache && this.config.cache_enabled) {
+                const cached = this.cache.get(cacheKey);
+                if (cached && Date.now() - cached.timestamp < this.config.cache_duration) {
                     return {
-                        success: true,
-                        data: cached,
-                        metadata: { cache_hit: true }
+                        ...cached.result,
+                        metadata: { ...cached.result.metadata, cache_hit: true }
                     };
                 }
             }
-            // Initialize results
-            const results = {
-                identified_technologies: [],
-                tech_types: tech_types || this.tech_types,
-                categories: categories || this.categories,
-                timestamp: new Date().toISOString(),
-                context: context,
-                stack_analysis: {
-                    completeness: {},
-                    compatibility: {},
-                    suggestions: []
-                }
-            };
             // Process text
-            if (text.trim()) {
-                // Split text into words and clean them
-                const words = text.split(/[\s,.-]+/)
-                    .map(word => word.toLowerCase().trim())
-                    .filter(word => word.length > 0);
-                // Process each word
-                const seen_techs = new Set();
-                for (const word of words) {
-                    const normalized = this._normalize_tech_name(word);
-                    const tech = this.technologies.get(normalized);
-                    if (tech) {
-                        // Apply filters
-                        if (tech_types && !tech_types.includes(tech.type))
-                            continue;
-                        if (categories && !categories.includes(tech.category))
-                            continue;
-                        if (!seen_techs.has(normalized)) {
-                            seen_techs.add(normalized);
-                            results.identified_technologies.push({
-                                name: tech.name,
-                                type: tech.type,
-                                category: tech.category,
-                                description: tech.description,
-                                confidence_score: this._calculate_confidence(word, tech.name),
-                                popularity: tech.popularity_metrics,
-                                version_info: tech.version_info,
-                                ecosystem: tech.ecosystem,
-                                use_cases: tech.use_cases
-                            });
-                        }
-                    }
-                }
-            }
-            // Cache results
-            if (use_cache) {
-                this.results_cache.set(cache_key, results);
-            }
-            return {
+            const normalizedText = (0, utils_1.normalizeText)(text);
+            const processedText = await (0, utils_1.processText)(normalizedText);
+            // Analyze technologies
+            const identified_technologies = this.identifyTechnologies(processedText, tech_types || this.config.tech_types, categories || this.config.categories);
+            // Analyze stack
+            const stack_analysis = this.analyzeStack(identified_technologies);
+            const result = {
                 success: true,
-                data: results,
+                data: {
+                    identified_technologies,
+                    tech_types: tech_types || this.config.tech_types,
+                    categories: categories || this.config.categories,
+                    timestamp: new Date().toISOString(),
+                    context,
+                    stack_analysis
+                },
                 metadata: {
                     cache_hit: false,
-                    tech_count: results.identified_technologies.length
+                    processing_time: Date.now()
                 }
             };
+            // Cache result
+            if (use_cache && this.config.cache_enabled) {
+                this.cache.set(cacheKey, {
+                    result,
+                    timestamp: Date.now()
+                });
+            }
+            return result;
         }
         catch (error) {
             return {
                 success: false,
-                error: new TechAnalyzerError(`Analysis failed: ${String(error)}`, "AnalysisError", { text: text === null || text === void 0 ? void 0 : text.slice(0, 100), error: String(error) })
+                error: {
+                    message: error instanceof Error ? error.message : 'Unknown error occurred',
+                    error_type: 'ProcessingError',
+                    details: error instanceof Error ? { stack: error.stack } : undefined,
+                    recovery_hint: 'Try with different input or check the error details'
+                }
             };
         }
     }
-    _normalize_tech_name(name) {
-        return name.toLowerCase()
-            .replace(/[^a-z0-9]+/g, '')
-            .trim();
+    identifyTechnologies(text, tech_types, categories) {
+        const technologies = [];
+        const matches = text.match(trigger_map_1.TRIGGER_MAP.pattern) || [];
+        for (const match of matches) {
+            const tech = trigger_map_1.TRIGGER_MAP.getTechnology(match.toLowerCase());
+            if (tech &&
+                tech_types.includes(tech.type) &&
+                categories.includes(tech.category)) {
+                technologies.push({
+                    ...tech,
+                    matches: [match],
+                    confidence_score: this.calculateConfidenceScore(match, text)
+                });
+            }
+        }
+        return technologies;
     }
-    _calculate_confidence(original, tech_name) {
-        let score = 0.7; // Base score
-        // Exact match bonus (case-insensitive)
-        if (original.toLowerCase() === tech_name.toLowerCase()) {
-            score += 0.3;
+    calculateConfidenceScore(match, text) {
+        // Simple confidence score calculation
+        const frequency = (text.match(new RegExp(match, 'gi')) || []).length;
+        const contextScore = frequency > 1 ? 0.2 : 0;
+        const baseScore = 0.7;
+        return Math.min(baseScore + contextScore, 1);
+    }
+    analyzeStack(technologies) {
+        return {
+            completeness: this.checkStackCompleteness(technologies),
+            compatibility: this.checkCompatibility(technologies),
+            suggestions: this.generateSuggestions(technologies)
+        };
+    }
+    checkStackCompleteness(technologies) {
+        const completeness = {
+            frontend: false,
+            backend: false,
+            database: false
+        };
+        for (const tech of technologies) {
+            if (tech.category in completeness) {
+                completeness[tech.category] = true;
+            }
         }
-        // Partial match bonus
-        else if (tech_name.toLowerCase().includes(original.toLowerCase()) ||
-            original.toLowerCase().includes(tech_name.toLowerCase())) {
-            score += 0.1;
+        return completeness;
+    }
+    checkCompatibility(technologies) {
+        // Simplified compatibility check
+        return {
+            compatible: true,
+            issues: []
+        };
+    }
+    generateSuggestions(technologies) {
+        const suggestions = [];
+        const categories = new Set(technologies.map(t => t.category));
+        if (!categories.has('testing')) {
+            suggestions.push('Consider adding testing frameworks to your stack');
         }
-        // Known technology bonus
-        const normalized = this._normalize_tech_name(original);
-        if (this.technologies.has(normalized)) {
-            score += 0.2;
+        if (!categories.has('devops')) {
+            suggestions.push('Consider adding DevOps tools for better deployment workflow');
         }
-        return Math.min(score, 1.0);
+        return suggestions;
     }
 }
 exports.TechStackAnalyzer = TechStackAnalyzer;
+//# sourceMappingURL=tech_analyzer.js.map

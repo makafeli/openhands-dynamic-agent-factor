@@ -28,15 +28,13 @@ jobs:
     - name: Install dependencies
       run: |
         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        npm install
+        npm ci --ignore-scripts
+        npm run build
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     - name: Run tests
       run: npm test
-
-    - name: Build package
-      run: npm run build
 
   publish-npm:
     needs: build
@@ -56,15 +54,13 @@ jobs:
     - name: Install dependencies
       run: |
         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        npm install
+        npm ci --ignore-scripts
+        npm run build
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-    - name: Build package
-      run: npm run build
-
     - name: Publish to NPM
-      run: npm publish --access public
+      run: npm publish --access public --ignore-scripts
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 

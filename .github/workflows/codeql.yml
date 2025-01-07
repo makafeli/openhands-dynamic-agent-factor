@@ -54,7 +54,8 @@ jobs:
       if: matrix.language == 'javascript'
       run: |
         echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        npm install
+        npm ci --ignore-scripts
+        npm run build
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
