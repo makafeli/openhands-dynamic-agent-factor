@@ -9,6 +9,27 @@ export interface TechnologyInfo {
   use_cases?: string[];
 }
 
+export interface TriggerInfo {
+  pattern: string;
+  type: string;
+  category: string;
+}
+
+export interface TriggerMapConfig {
+  patterns: TriggerInfo[];
+  caseSensitive?: boolean;
+}
+
+export interface TriggerPattern {
+  pattern: RegExp;
+  info: TriggerInfo;
+}
+
+export interface TriggerResult {
+  matches: string[];
+  info: TriggerInfo;
+}
+
 class TriggerMap {
   private technologies: Map<string, TechnologyInfo>;
   private patternString: string;
