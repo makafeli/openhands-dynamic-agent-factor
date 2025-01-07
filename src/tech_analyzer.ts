@@ -142,25 +142,24 @@ export class TechStackAnalyzer {
     tech_types: string[],
     categories: string[]
   ) {
-    const technologies = [];
     const matches = text.match(TRIGGER_MAP.pattern) || [];
-
-    for (const match of matches) {
-      const tech = TRIGGER_MAP.getTechnology(match.toLowerCase());
-      if (
-        tech &&
-        tech_types.includes(tech.type) &&
-        categories.includes(tech.category)
-      ) {
-        technologies.push({
-          ...tech,
-          matches: [match],
-          confidence_score: this.calculateConfidenceScore(match, text)
-        });
-      }
-    }
-
-    return technologies;
+    return matches
+      .map(match => {
+        const tech = TRIGGER_MAP.getTechnology(match.toLowerCase());
+        if (
+          tech &&
+          tech_types.includes(tech.type) &&
+          categories.includes(tech.category)
+        ) {
+          return {
+            ...tech,
+            matches: [match],
+            confidence_score: this.calculateConfidenceScore(match, text)
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
   }
 
   private calculateConfidenceScore(match: string, text: string): number {
