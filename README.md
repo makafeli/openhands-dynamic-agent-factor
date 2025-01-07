@@ -10,85 +10,55 @@ A powerful system for analyzing and generating technology-specific agents with c
   * Programming Languages (Python, JavaScript, etc.)
   * Frontend Frameworks (React, Vue, etc.)
   * Backend Frameworks (Django, Express, etc.)
-  * CSS Frameworks (Tailwind, Bootstrap, etc.)
   * Databases (PostgreSQL, MongoDB, etc.)
   * Testing Tools (Jest, PyTest, etc.)
   * DevOps Tools (Docker, Kubernetes, etc.)
-  * Cloud Services (AWS, GCP, etc.)
 
 ### 2. Analysis Capabilities
 - Stack compatibility checking
-- Dependency analysis
-- Version management
-- Security advisories
-- Learning resources
+- Technology detection
+- Confidence scoring
+- Stack completeness analysis
 - Best practices recommendations
-- Technology ecosystem mapping
+- Technology suggestions
 
-### 3. Web Interface
-- Interactive dashboard for analysis
-- Real-time visualization
-- Historical tracking
-- Template management
-- Analysis reports
-- Stack suggestions
+## Installation
 
-### 4. CLI Tool
+### NPM Package
 ```bash
-# Install CLI
-npm install -g openhands-cli
-
-# Basic analysis
-openhands analyze "Building with React and Django"
-
-# Analysis with template
-openhands analyze --template strict "Using Tailwind CSS"
-
-# Launch dashboard
-openhands dashboard
-
-# Create custom template
-openhands template create custom --description "Custom analysis"
+npm install dynamic-agent
 ```
 
-### 5. NPM Package
+### Python Package
 ```bash
-# Install package
-npm install openhands-dynamic-agent-factor
+pip install openhands-dynamic-agent-factor
+```
 
-# Usage
-const { TechStackAnalyzer } = require('openhands-dynamic-agent-factor');
+## Usage
 
+### JavaScript/TypeScript API
+
+```typescript
+import { TechStackAnalyzer } from 'dynamic-agent';
+
+// Initialize analyzer
 const analyzer = new TechStackAnalyzer();
-const result = await analyzer.analyze(
-    "Building a web app with React and Node.js"
+
+// Analyze tech stack
+const result = await analyzer.process_text(
+    "Building a web app with React frontend, Node.js backend, and MongoDB database"
 );
+
+// Access results
+if (result.success) {
+    const { identified_technologies, stack_analysis } = result.data;
+    console.log('Technologies:', identified_technologies);
+    console.log('Stack Analysis:', stack_analysis);
+}
 ```
 
-### 6. CI/CD Integration
-- GitHub Actions integration
-- GitLab CI integration
-- Automated analysis in PRs
-- Custom reporting
-- Status checks
+### Python API
 
-```yaml
-# .github/workflows/tech-analysis.yml
-name: Technology Stack Analysis
-
-on: [pull_request]
-
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: openhands/tech-analysis-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-### 7. Python API
 ```python
 from openhands_dynamic_agent_factory import TechStackAnalyzer
 
@@ -98,229 +68,59 @@ analyzer = TechStackAnalyzer()
 # Analyze tech stack
 result = analyzer.process_text(
     "Building a web app with Python/Django backend, "
-    "React frontend, PostgreSQL database, and testing with Jest"
+    "React frontend, and PostgreSQL database"
 )
 
-# Get stack suggestions
-suggestion = analyzer.suggest_stack({
-    "project_type": "web",
-    "scale": "medium",
-    "team_expertise": ["python", "javascript"],
-    "constraints": {
-        "exclude": ["legacy"]
-    }
-})
-```
-
-## Installation
-
-### NPM Package
-```bash
-npm install openhands-dynamic-agent-factor
-```
-
-### Python Package
-```bash
-pip install openhands-dynamic-agent-factor
-```
-
-### CLI Tool
-```bash
-npm install -g openhands-cli
-```
-
-## Web Dashboard
-
-The web dashboard provides an interactive interface for:
-- Real-time technology analysis
-- Stack compatibility checking
-- Learning resource suggestions
-- Historical analysis tracking
-- Template management
-- Custom reporting
-
-To launch the dashboard:
-```bash
-openhands dashboard
-```
-
-Or programmatically:
-```python
-from openhands_dynamic_agent_factory import launch_dashboard
-launch_dashboard(port=8000)
-```
-
-## Templates
-
-Customize analysis with templates:
-
-```json
-{
-  "name": "strict",
-  "description": "Strict analysis mode",
-  "validation_rules": {
-    "code_length": {
-      "max_length": 10000,
-      "severity": "error"
-    },
-    "compatibility": {
-      "required": true,
-      "severity": "warning"
-    }
-  }
-}
-```
-
-## CI/CD Integration
-
-### GitHub Actions
-
-```yaml
-# .github/workflows/tech-analysis.yml
-name: Technology Stack Analysis
-
-on: [pull_request]
-
-jobs:
-  analyze:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: openhands/tech-analysis-action@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          config_file: .openhands.yml
-```
-
-### GitLab CI
-
-```yaml
-# .gitlab-ci.yml
-tech-analysis:
-  image: openhands/tech-analyzer:latest
-  script:
-    - openhands analyze
-  artifacts:
-    reports:
-      json: tech-analysis.json
-```
-
-## Configuration
-
-### .openhands.yml
-```yaml
-analysis:
-  types:
-    - language
-    - framework
-    - database
-    - testing
-  
-  templates:
-    - strict
-    - security
-    
-  reporting:
-    format: markdown
-    include_suggestions: true
-    include_resources: true
-    
-  ci:
-    comment_on_pr: true
-    fail_on_error: false
-    create_report: true
+# Access results
+if result.success:
+    identified_technologies = result.data.get('identified_technologies')
+    stack_analysis = result.data.get('stack_analysis')
+    print('Technologies:', identified_technologies)
+    print('Stack Analysis:', stack_analysis)
 ```
 
 ## API Documentation
 
-### Python API
+### TechStackAnalyzer Class
 
-```python
-from openhands_dynamic_agent_factory import TechStackAnalyzer
+The main class for analyzing technology stacks. It provides methods for:
+- Technology detection in text
+- Stack compatibility analysis
+- Completeness checking
+- Suggestions for improvements
 
-class TechStackAnalyzer:
-    """
-    Analyze technology stacks and provide insights.
-    
-    Features:
-    - Technology detection
-    - Stack compatibility
-    - Best practices
-    - Learning resources
-    """
-    
-    def process_text(
-        self,
-        text: str,
-        context: str = "",
-        tech_types: Optional[List[str]] = None,
-        categories: Optional[List[str]] = None,
-        use_cache: bool = True
-    ) -> OperationResult[Dict[str, Any]]:
-        """
-        Process text to identify technology stack components.
-        
-        Args:
-            text: Input text to analyze
-            context: Optional context about the text
-            tech_types: Optional list of technology types to look for
-            categories: Optional list of categories to look for
-            use_cache: Whether to use cached results
-        """
-        pass
-        
-    def suggest_stack(
-        self,
-        requirements: Dict[str, Any]
-    ) -> OperationResult[Dict[str, Any]]:
-        """
-        Suggest a technology stack based on requirements.
-        
-        Args:
-            requirements: Dictionary containing:
-                - project_type: Type of project (web, mobile, etc.)
-                - scale: Expected scale (small, medium, large)
-                - team_expertise: List of technologies team is familiar with
-                - constraints: Any technical constraints
-        """
-        pass
-```
+```typescript
+interface Technology {
+    name: string;
+    type: string;
+    category: string;
+    description: string;
+    confidence_score: number;
+    matches: string[];
+}
 
-### JavaScript API
-
-```javascript
-const { TechStackAnalyzer } = require('openhands-dynamic-agent-factor');
-
-class TechStackAnalyzer {
-    /**
-     * Analyze technology stacks and provide insights.
-     * 
-     * @param {Object} options Configuration options
-     */
-    constructor(options = {}) {
-        // Initialize analyzer
-    }
-    
-    /**
-     * Process text to identify technology stack components.
-     * 
-     * @param {string} text Input text to analyze
-     * @param {Object} options Analysis options
-     * @returns {Promise<Object>} Analysis results
-     */
-    async analyze(text, options = {}) {
-        // Analyze text
-    }
-    
-    /**
-     * Suggest a technology stack based on requirements.
-     * 
-     * @param {Object} requirements Stack requirements
-     * @returns {Promise<Object>} Stack suggestions
-     */
-    async suggestStack(requirements) {
-        // Generate suggestions
-    }
+interface AnalysisResult {
+    success: boolean;
+    data?: {
+        identified_technologies: Technology[];
+        tech_types: string[];
+        categories: string[];
+        timestamp: string;
+        context: string;
+        stack_analysis: {
+            completeness: Record<string, boolean>;
+            compatibility: {
+                compatible: boolean;
+                issues: string[];
+            };
+            suggestions: string[];
+        };
+    };
+    error?: {
+        message: string;
+        error_type: string;
+        recovery_hint: string;
+    };
 }
 ```
 

@@ -1,52 +1,47 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 require("@jest/globals");
-// Increase timeout for all tests
-jest.setTimeout(10000);
-// Mock axios for HTTP requests
-jest.mock('axios', () => ({
-    create: jest.fn(() => ({
-        get: jest.fn(),
-        post: jest.fn(),
-        put: jest.fn(),
-        delete: jest.fn(),
-        interceptors: {
-            request: { use: jest.fn(), eject: jest.fn() },
-            response: { use: jest.fn(), eject: jest.fn() }
-        }
-    })),
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-        request: { use: jest.fn(), eject: jest.fn() },
-        response: { use: jest.fn(), eject: jest.fn() }
-    }
-}));
-// Mock cheerio
-jest.mock('cheerio', () => ({
-    load: jest.fn(() => ({
-        find: jest.fn(),
-        text: jest.fn(),
-        html: jest.fn()
-    }))
-}));
-// Global test setup
-beforeAll(() => {
-    // Clear all mocks before each test suite
-    jest.clearAllMocks();
-});
+// Mock global fetch if needed
+global.fetch = jest.fn();
+// Reset all mocks before each test
 beforeEach(() => {
-    // Clear all mocks before each test
+    jest.resetAllMocks();
     jest.clearAllMocks();
+    global.fetch.mockClear();
 });
+// Clean up after each test
 afterEach(() => {
-    // Clean up after each test
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
 });
-afterAll(() => {
-    // Clean up after all tests
-    jest.clearAllMocks();
+// Add custom matchers if needed
+expect.extend({
+    toBeWithinRange(received, floor, ceiling) {
+        const pass = received >= floor && received <= ceiling;
+        if (pass) {
+            return {
+                message: () => `expected ${received} not to be within range ${floor} - ${ceiling}`,
+                pass: true,
+            };
+        }
+        else {
+            return {
+                message: () => `expected ${received} to be within range ${floor} - ${ceiling}`,
+                pass: false,
+            };
+        }
+    },
 });
+// Add custom environment variables for testing
+process.env.NODE_ENV = 'test';
+// Increase timeout for async operations if needed
+jest.setTimeout(10000);
+// Suppress console output during tests
+global.console = {
+    ...console,
+    log: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    debug: jest.fn(),
+};
 //# sourceMappingURL=setupTests.js.map

@@ -1,36 +1,41 @@
-export interface TriggerInfo {
+export interface TechnologyInfo {
     name: string;
     type: string;
     category: string;
     description: string;
-    confidence_score: number;
     popularity?: Record<string, any>;
     version_info?: Record<string, any>;
     ecosystem?: Record<string, string[]>;
     use_cases?: string[];
 }
+export interface TriggerInfo {
+    pattern: string;
+    type: string;
+    category: string;
+}
 export interface TriggerMapConfig {
+    patterns: TriggerInfo[];
     caseSensitive?: boolean;
-    maxPatternLength?: number;
 }
 export interface TriggerPattern {
-    pattern: string;
-    flags?: string;
-    score?: number;
+    pattern: RegExp;
+    info: TriggerInfo;
 }
 export interface TriggerResult {
-    match: string;
+    matches: string[];
     info: TriggerInfo;
-    score: number;
 }
-export declare class TriggerMap {
-    private patterns;
-    technologies: Map<string, TriggerInfo>;
+declare class TriggerMap {
+    private technologies;
+    private patternString;
     constructor();
     private initializeTechnologies;
     private addTechnology;
+    private buildPatternString;
     get pattern(): RegExp;
-    getTechnology(key: string): TriggerInfo | undefined;
-    getAllTechnologies(): Map<string, TriggerInfo>;
+    getTechnology(name: string): TechnologyInfo | undefined;
+    getAllTechnologies(): TechnologyInfo[];
 }
 export declare const TRIGGER_MAP: TriggerMap;
+export {};
+//# sourceMappingURL=trigger_map.d.ts.map

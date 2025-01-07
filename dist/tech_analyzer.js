@@ -60,7 +60,11 @@ class TechStackAnalyzer {
             // Analyze technologies
             const identified_technologies = this.identifyTechnologies(processedText, tech_types || this.config.tech_types, categories || this.config.categories);
             // Analyze stack
-            const stack_analysis = this.analyzeStack(identified_technologies);
+            const stack_analysis = {
+                completeness: this.checkStackCompleteness(identified_technologies),
+                compatibility: this.checkCompatibility(identified_technologies),
+                suggestions: this.generateSuggestions(identified_technologies)
+            };
             const result = {
                 success: true,
                 data: {
@@ -98,21 +102,22 @@ class TechStackAnalyzer {
         }
     }
     identifyTechnologies(text, tech_types, categories) {
-        const technologies = [];
         const matches = text.match(trigger_map_1.TRIGGER_MAP.pattern) || [];
-        for (const match of matches) {
+        return matches
+            .map(match => {
             const tech = trigger_map_1.TRIGGER_MAP.getTechnology(match.toLowerCase());
             if (tech &&
                 tech_types.includes(tech.type) &&
                 categories.includes(tech.category)) {
-                technologies.push({
+                return {
                     ...tech,
                     matches: [match],
                     confidence_score: this.calculateConfidenceScore(match, text)
-                });
+                };
             }
-        }
-        return technologies;
+            return null;
+        })
+            .filter((tech) => tech !== null);
     }
     calculateConfidenceScore(match, text) {
         // Simple confidence score calculation
@@ -121,36 +126,40 @@ class TechStackAnalyzer {
         const baseScore = 0.7;
         return Math.min(baseScore + contextScore, 1);
     }
-    analyzeStack(technologies) {
-        return {
-            completeness: this.checkStackCompleteness(technologies),
-            compatibility: this.checkCompatibility(technologies),
-            suggestions: this.generateSuggestions(technologies)
-        };
-    }
-    checkStackCompleteness(technologies) {
+    checkStackCompleteness(techs) {
         const completeness = {
             frontend: false,
             backend: false,
             database: false
         };
-        for (const tech of technologies) {
+        // First, check for frameworks and tools
+        for (const tech of techs) {
             if (tech.category in completeness) {
-                completeness[tech.category] = true;
+                if (tech.type === 'framework' || tech.type === 'database') {
+                    completeness[tech.category] = true;
+                }
+            }
+        }
+        // Then, check for languages if no framework was found
+        for (const tech of techs) {
+            if (tech.category in completeness && !completeness[tech.category]) {
+                if (tech.type === 'language') {
+                    completeness[tech.category] = true;
+                }
             }
         }
         return completeness;
     }
-    checkCompatibility(technologies) {
+    checkCompatibility(_) {
         // Simplified compatibility check
         return {
             compatible: true,
             issues: []
         };
     }
-    generateSuggestions(technologies) {
+    generateSuggestions(techs) {
         const suggestions = [];
-        const categories = new Set(technologies.map(t => t.category));
+        const categories = new Set(techs.map(t => t.category));
         if (!categories.has('testing')) {
             suggestions.push('Consider adding testing frameworks to your stack');
         }

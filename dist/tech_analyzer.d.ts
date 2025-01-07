@@ -16,6 +16,18 @@ export interface ProcessTextOptions {
     categories?: string[];
     use_cache?: boolean;
 }
+export interface Technology {
+    category: string;
+    type: string;
+    matches: string[];
+    confidence_score: number;
+    name: string;
+    description: string;
+    popularity?: Record<string, any>;
+    version_info?: Record<string, any>;
+    ecosystem?: Record<string, string[]>;
+    use_cases?: string[];
+}
 export declare class TechStackAnalyzer {
     private config;
     private cache;
@@ -23,8 +35,8 @@ export declare class TechStackAnalyzer {
     process_text(text: string, context?: string, tech_types?: string[], categories?: string[], use_cache?: boolean): Promise<any>;
     private identifyTechnologies;
     private calculateConfidenceScore;
-    private analyzeStack;
     private checkStackCompleteness;
     private checkCompatibility;
     private generateSuggestions;
 }
+//# sourceMappingURL=tech_analyzer.d.ts.map
