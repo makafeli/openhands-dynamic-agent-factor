@@ -22,14 +22,14 @@ describe('TechStackAnalyzer', () => {
         });
 
         it('should process valid text', async () => {
-            const result = await analyzer.process_text('python javascript react');
+            const result = await analyzer.process_text('python javascript typescript');
             expect(result.success).toBe(true);
             expect(result.data?.identified_technologies.length).toBeGreaterThan(0);
         });
 
         it('should respect tech_types filter', async () => {
             const result = await analyzer.process_text(
-                'python javascript react node.js',
+                'python javascript typescript react angular',
                 '',
                 ['language']
             );
@@ -43,7 +43,7 @@ describe('TechStackAnalyzer', () => {
 
         it('should respect categories filter', async () => {
             const result = await analyzer.process_text(
-                'react angular vue',
+                'react angular vue python django',
                 '',
                 undefined,
                 ['frontend']
