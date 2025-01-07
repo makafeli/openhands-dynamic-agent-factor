@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export async function processText(text: string): Promise<string> {
   try {
     // Remove common noise
@@ -9,11 +7,11 @@ export async function processText(text: string): Promise<string> {
       .replace(/\s+/g, ' ') // Normalize whitespace
       .trim();
 
-    // Make API call to enhance text processing if needed
-    const response = await axios.get(`https://api.example.com/process?text=${encodeURIComponent(processed)}`);
-    return response.data.processed || processed;
+    // For now, we'll just return the processed text
+    // In the future, we can add API integration if needed
+    return processed;
   } catch (error) {
-    // If API call fails, return the basic processed text
+    // If processing fails, return the original text
     return text;
   }
 }
