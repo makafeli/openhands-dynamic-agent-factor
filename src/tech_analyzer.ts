@@ -22,6 +22,19 @@ export interface ProcessTextOptions {
   use_cache?: boolean;
 }
 
+export interface Technology {
+  category: string;
+  type: string;
+  matches: string[];
+  confidence_score: number;
+  name: string;
+  description: string;
+  popularity?: Record<string, any>;
+  version_info?: Record<string, any>;
+  ecosystem?: Record<string, string[]>;
+  use_cases?: string[];
+}
+
 export class TechStackAnalyzer {
   private config: TechStackAnalyzerConfig;
   private cache: Map<string, { result: any; timestamp: number }>;
@@ -145,7 +158,7 @@ export class TechStackAnalyzer {
     text: string,
     tech_types: string[],
     categories: string[]
-  ) {
+  ): Technology[] {
     const matches = text.match(TRIGGER_MAP.pattern) || [];
     return matches
       .map(match => {
@@ -159,11 +172,11 @@ export class TechStackAnalyzer {
             ...tech,
             matches: [match],
             confidence_score: this.calculateConfidenceScore(match, text)
-          };
+          } as Technology;
         }
         return null;
       })
-      .filter(Boolean);
+      .filter((tech): tech is Technology => tech !== null);
   }
 
   private calculateConfidenceScore(match: string, text: string): number {
@@ -174,14 +187,14 @@ export class TechStackAnalyzer {
     return Math.min(baseScore + contextScore, 1);
   }
 
-  private checkStackCompleteness(technologies: any[]) {
+  private checkStackCompleteness(techs: Technology[]) {
     const completeness: Record<string, boolean> = {
       frontend: false,
       backend: false,
       database: false
     };
 
-    for (const tech of technologies) {
+    for (const tech of techs) {
       if (tech.category in completeness) {
         completeness[tech.category] = true;
       }
@@ -190,7 +203,7 @@ export class TechStackAnalyzer {
     return completeness;
   }
 
-  private checkCompatibility(technologies: any[]) {
+  private checkCompatibility(techs: Technology[]) {
     // Simplified compatibility check
     return {
       compatible: true,
@@ -198,9 +211,9 @@ export class TechStackAnalyzer {
     };
   }
 
-  private generateSuggestions(technologies: any[]) {
+  private generateSuggestions(techs: Technology[]) {
     const suggestions: string[] = [];
-    const categories = new Set(technologies.map(t => t.category));
+    const categories = new Set(techs.map(t => t.category));
 
     if (!categories.has('testing')) {
       suggestions.push('Consider adding testing frameworks to your stack');
