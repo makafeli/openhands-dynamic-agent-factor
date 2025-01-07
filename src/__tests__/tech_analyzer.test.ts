@@ -1,6 +1,5 @@
 import { describe, expect, it, beforeEach } from '@jest/globals';
 import { TechStackAnalyzer, Technology } from '../tech_analyzer';
-import { TRIGGER_MAP } from '../trigger_map';
 
 describe('TechStackAnalyzer', () => {
     let analyzer: TechStackAnalyzer;
