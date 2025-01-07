@@ -1,22 +1,36 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "es2018",
     "module": "commonjs",
-    "lib": ["es2019", "dom"],
+    "lib": ["es2018", "dom"],
     "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "*": ["node_modules/*"]
-    }
+    },
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"
@@ -25,6 +39,7 @@
     "node_modules",
     "dist",
     "**/*.test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/__tests__/*"
   ]
 }
