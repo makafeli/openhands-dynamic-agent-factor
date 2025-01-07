@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="openhands-dynamic-agent-factor",
-    version="1.0.1",
+    version="1.0.2",
     author="Your Name",
     author_email="your.email@example.com",
     description="A powerful system for analyzing and generating technology-specific agents",
@@ -47,7 +47,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "openhands=openhands_dynamic_agent_factory.cli:main",
+            "openhands=openhands_dynamic_agent_factory.core.cli:main",
         ],
     },
 )
