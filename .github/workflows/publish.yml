@@ -59,6 +59,15 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+    - name: Check npm version
+      run: |
+        CURRENT_VERSION=$(npm view dynamic-agent version)
+        PACKAGE_VERSION=$(node -p "require('./package.json').version")
+        if [ "$CURRENT_VERSION" = "$PACKAGE_VERSION" ]; then
+          echo "Package version $PACKAGE_VERSION already exists. Please update version in package.json"
+          exit 1
+        fi
+
     - name: Publish to NPM
       run: npm publish --access public --ignore-scripts
       env:
