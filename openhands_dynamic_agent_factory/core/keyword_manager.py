@@ -4,7 +4,7 @@ validation, and integration with the dynamic agent factory.
 """
 
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, cast
 from datetime import datetime
 import json
 import os
@@ -69,7 +69,7 @@ class StateManager:
                 "last_updated": datetime.now().isoformat()
             })
 
-    def load_state(self) -> Dict[str, Any]:
+    def load_state(self) -> Dict[str, Dict[str, Any]]:
         """Load state with error handling and validation."""
         with self.lock:
             try:
@@ -81,7 +81,7 @@ class StateManager:
                 if not all(key in state for key in required_keys):
                     raise ValueError("Invalid state file structure")
                 
-                return state
+                return cast(Dict[str, Dict[str, Any]], state)
             except Exception as e:
                 logger.error(f"Error loading state: {e}")
                 return {
@@ -138,7 +138,7 @@ class KeywordManager:
         # Initialize with trigger map
         self._sync_with_trigger_map(TRIGGER_MAP)
 
-    def _sync_with_trigger_map(self, trigger_map: Dict) -> None:
+    def _sync_with_trigger_map(self, trigger_map: Dict[str, Any]) -> None:
         """Synchronize keywords with trigger map."""
         for k, v in trigger_map.items():
             if k not in self.keywords:
@@ -215,14 +215,14 @@ class KeywordManager:
         if pattern:
             try:
                 regex = re.compile(pattern, re.IGNORECASE)
-                return {
+                return cast(Dict[str, str], {
                     k: v for k, v in self.keywords.items()
                     if regex.search(k) or regex.search(v)
-                }
+                })
             except re.error as e:
                 logger.error(f"Invalid regex pattern: {e}")
-                return self.keywords
-        return self.keywords
+                return cast(Dict[str, str], self.keywords)
+        return cast(Dict[str, str], self.keywords)
 
     def detect_keyword(self, input_text: str) -> Optional[str]:
         """
@@ -255,7 +255,7 @@ class KeywordManager:
         if matches:
             best_match = max(matches, key=lambda x: x[1])[0]
             logger.info(f"Detected keyword: {best_match}")
-            return best_match
+            return cast(Optional[str], best_match)
             
         logger.debug("No keyword detected")
         return None
@@ -329,7 +329,7 @@ class KeywordManager:
             self._save_current_state()
             logger.info(f"Updated status for agent {keyword}: {status}")
 
-    def show_agents(self, include_history: bool = False) -> Dict[str, Any]:
+    def show_agents(self, include_history: bool = False) -> Dict[str, Dict[str, Any]]:
         """
         Display indexed agents with optional history.
         
@@ -337,7 +337,7 @@ class KeywordManager:
             include_history: Whether to include error history
             
         Returns:
-            Dict[str, Any]: Agent information
+            Dict[str, Dict[str, Any]]: Agent information
         """
         return {
             k: {
