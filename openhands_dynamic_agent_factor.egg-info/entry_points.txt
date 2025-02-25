@@ -1,0 +1,2 @@
+[console_scripts]
+openhands = openhands_dynamic_agent_factory.core.cli:main

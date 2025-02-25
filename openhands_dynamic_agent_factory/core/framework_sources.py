@@ -3,11 +3,12 @@ Framework data sources and fetching utilities.
 Provides methods to fetch framework information from various authoritative sources.
 """
 
+import re
 import logging
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, cast
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 from .utils import monitor_performance, OperationResult, BaseError
 
@@ -32,7 +33,7 @@ class FrameworkSourceError(BaseError):
 @monitor_performance("CSS framework fetch")
 def fetch_css_frameworks() -> List[Dict[str, Any]]:
     """Fetch CSS framework information from multiple sources."""
-    frameworks = []
+    frameworks: List[Dict[str, Any]] = []
     
     try:
         # Fetch from awesome-css-frameworks
@@ -71,7 +72,7 @@ def fetch_css_frameworks() -> List[Dict[str, Any]]:
 @monitor_performance("UI framework fetch")
 def fetch_ui_frameworks() -> List[Dict[str, Any]]:
     """Fetch UI framework information from multiple sources."""
-    frameworks = []
+    frameworks: List[Dict[str, Any]] = []
     
     try:
         # Fetch from awesome-javascript
@@ -110,7 +111,7 @@ def fetch_ui_frameworks() -> List[Dict[str, Any]]:
 @monitor_performance("Testing framework fetch")
 def fetch_testing_frameworks() -> List[Dict[str, Any]]:
     """Fetch testing framework information from multiple sources."""
-    frameworks = []
+    frameworks: List[Dict[str, Any]] = []
     
     try:
         # Fetch from awesome-testing
@@ -156,7 +157,7 @@ def fetch_github_info(url: str) -> Optional[Dict[str, Any]]:
             response = requests.get(api_url)
             if response.status_code == 200:
                 data = response.json()
-                return {
+                return cast(Dict[str, Any], {
                     "stars": data.get("stargazers_count"),
                     "last_updated": datetime.strptime(
                         data.get("updated_at"), "%Y-%m-%dT%H:%M:%SZ"
@@ -164,7 +165,7 @@ def fetch_github_info(url: str) -> Optional[Dict[str, Any]]:
                     "open_issues": data.get("open_issues_count"),
                     "forks": data.get("forks_count"),
                     "description": data.get("description")
-                }
+                })
     except Exception as e:
         logger.debug(f"Error fetching GitHub info for {url}: {e}")
     return None
@@ -176,14 +177,14 @@ def fetch_npm_info(name: str) -> Optional[Dict[str, Any]]:
         response = requests.get(f"https://registry.npmjs.org/{name}")
         if response.status_code == 200:
             data = response.json()
-            return {
+            return cast(Dict[str, Any], {
                 "npm_package": name,
                 "description": data.get("description", ""),
                 "latest_version": data.get("dist-tags", {}).get("latest"),
                 "versions": list(data.get("versions", {}).keys()),
                 "maintainers": [m.get("name") for m in data.get("maintainers", [])],
                 "homepage": data.get("homepage")
-            }
+            })
     except Exception as e:
         logger.debug(f"Error fetching npm info for {name}: {e}")
     return None

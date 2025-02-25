@@ -11,13 +11,14 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from threading import Lock
-from typing import Any, Callable, Dict, Optional, TypeVar, Generic, Union
-from abc import ABC, abstractmethod
+from typing import Any, Callable, Dict, Optional, TypeVar, Generic, Union, ParamSpec, TypeGuard, cast
 
 # Type variables for generics
 T = TypeVar('T')
 K = TypeVar('K')
 V = TypeVar('V')
+P = ParamSpec('P')
+R = TypeVar('R')
 
 # Configure logging
 logging.basicConfig(
@@ -209,11 +210,11 @@ def retry(
     delay: float = 1.0,
     backoff: float = 2.0,
     exceptions: tuple = (Exception,)
-) -> Callable:
+) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Retry decorator with exponential backoff."""
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             last_exception = None
             attempt = 0
             current_delay = delay
@@ -324,11 +325,11 @@ class StructureValidator(Validator):
         )
 
 # Performance monitoring decorator
-def monitor_performance(operation: str):
+def monitor_performance(operation: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Monitor operation performance."""
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             start_time = time.time()
             try:
                 result = func(*args, **kwargs)

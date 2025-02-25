@@ -32,6 +32,11 @@ dependencies = [
     "PyYAML>=6.0",
     "mkdocs>=1.4.0",
     "mkdocs-material>=9.0.0",
+    "types-requests>=2.25.0",
+    "types-beautifulsoup4>=4.9.0",
+    "types-PyYAML>=6.0",
+    "types-setuptools>=45.0.0",
+    "dataclasses-json>=0.5.7",
 ]
 
 [project.optional-dependencies]
@@ -70,6 +75,20 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 warn_no_return = true
 warn_unreachable = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = "setuptools.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "bs4.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "requests.*"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
