@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/makafeli/openhands-dynamic-agent-factor#readme",
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.8.3",
     "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
